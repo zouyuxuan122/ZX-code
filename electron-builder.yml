@@ -1,0 +1,36 @@
+appId: com.zuxuan.zx-code
+productName: ZX-Code
+copyright: Copyright © 2026 zouyuxuan122
+
+directories:
+  output: release
+  buildResources: resources
+
+files:
+  - out/**/*
+  - resources/**/*
+  - package.json
+
+extraResources:
+  - from: resources/wasm/
+    to: wasm/
+    filter: ['**/*']
+
+extraMetadata:
+  main: out/main/index.js
+
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+  icon: resources/icons/favicon.ico
+  artifactName: ${productName}-${version}-${arch}.${ext}
+  signAndEditExecutable: false
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: ZX-Code

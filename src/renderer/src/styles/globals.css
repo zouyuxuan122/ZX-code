@@ -1,0 +1,2200 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* ===== Base 椋庢牸锛堥粯璁ゆ殫鑹诧級 ===== */
+  [data-style="base"]:root,
+  [data-style="base"] {
+    /* 绾?粦鑳屾櫙灞傜骇 */
+    --bg-primary: #050505;
+    --bg-secondary: #0a0a0a;
+    --bg-tertiary: #101010;
+    --bg-elevated: #161616;
+    --bg-overlay: rgba(0, 0, 0, 0.92);
+
+    /* 鏄捐憲鐧借壊绾挎潯杈规?*/
+    --border-default: rgba(255, 255, 255, 0.32);
+    --border-subtle: rgba(255, 255, 255, 0.16);
+    --border-strong: rgba(255, 255, 255, 0.55);
+    --border-hover: rgba(255, 255, 255, 0.75);
+    --border-glow: rgba(255, 255, 255, 0.3);
+
+    /* 楂樹杭姣旀枃瀛?*/
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.9);
+    --text-tertiary: rgba(255, 255, 255, 0.65);
+    --text-link: #6bb3ff;
+
+    /* Accent锛堝皯閲忕偣缂€锛?*/
+    --accent-blue: #5ba6ff;
+    --accent-blue-hover: #4a96ff;
+    --accent-green: #00d97e;
+    --accent-orange: #ffa940;
+    --accent-red: #ff5c5c;
+    --accent-purple: #b366ff;
+    --accent-coffee: #c8965a;
+
+    /* 闃村奖锛堢函榛戠珛浣撴劅 + 鐧界伆鐐厜灞傛锛?*/
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.6), 0 1px 1px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.7), 0 2px 4px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 14px 36px rgba(0, 0, 0, 0.85), 0 6px 12px rgba(0, 0, 0, 0.6);
+    /* 鐧界伆鐐厜锛氫粠鐧借壊楂樺厜杩囨浮鍒扮伆鑹插讥鏁ｏ紝鏇夸唬鍘熻摑鑹插厜鏅?*/
+    --shadow-glow: 0 0 24px rgba(255, 255, 255, 0.18), 0 0 8px rgba(255, 255, 255, 0.12);
+    /* 绔嬩綋灞傛锛氶《閮ㄧ櫧鑹查珮鍏?+ 搴曢儴鏆楀奖 + 鍐呭嚬杈圭紭锛屾姏寮冨崟涓€鐩寸嚎杈规 */
+    --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -1px 0 rgba(0, 0, 0, 0.5), inset 1px 0 0 rgba(255, 255, 255, 0.04), inset -1px 0 0 rgba(0, 0, 0, 0.3);
+    /* 澶氬眰绔嬩綋闃村奖锛堢敤浜庢偓娴崱鐗囷細搴曢儴娣卞奖 + 鐧界伆杈圭紭鍏夛級 */
+    --shadow-layered: 0 1px 0 rgba(255, 255, 255, 0.06), 0 8px 24px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+    /* 缂撳姩鍑芥暟锛堟洿鐜颁唬锛?*/
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-back: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+    /* 杩囨浮鏃堕暱 */
+    --transition-fast: 180ms var(--ease-out-expo);
+    --transition-normal: 280ms var(--ease-out-expo);
+    --transition-slow: 450ms var(--ease-out-expo);
+
+    /* 九宫格分割线颜色 */
+    --grid-divider: #101010;
+  }
+
+  /* Base 椋庢牸浜�壊 */
+  [data-style="base"][data-theme="light"] {
+    --bg-primary: #ffffff;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f4f4f5;
+    --bg-elevated: #ebebed;
+    --bg-overlay: rgba(255, 255, 255, 0.8);
+
+    --border-default: rgba(0, 0, 0, 0.16);
+    --border-subtle: rgba(0, 0, 0, 0.08);
+    --border-strong: rgba(0, 0, 0, 0.32);
+    --border-hover: rgba(0, 0, 0, 0.5);
+    --border-glow: rgba(0, 0, 0, 0.15);
+
+    --text-primary: #0a0a0a;
+    --text-secondary: rgba(0, 0, 0, 0.7);
+    --text-tertiary: rgba(0, 0, 0, 0.45);
+    --text-link: #2563eb;
+
+    --accent-blue: #2563eb;
+    --accent-blue-hover: #1d4ed8;
+
+    /* 娴呰壊涓婚锛氫繚鎸佸師鏈竻鐖芥祬鑹诧紝涓嶇敤鐧界伆娓愬彉 */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 14px 36px rgba(0, 0, 0, 0.18);
+    --shadow-glow: 0 0 24px rgba(37, 99, 235, 0.25);
+    --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(0, 0, 0, 0.06);
+    --shadow-layered: 0 1px 0 rgba(255, 255, 255, 0.9), 0 8px 24px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.06);
+  }
+
+  /* ===== Apple 风格（暗色） ===== */
+  [data-style="apple"]:root,
+  [data-style="apple"] {
+    --bg-primary: #111113;
+    --bg-secondary: #141416;
+    --bg-tertiary: #1c1c1e;
+    --bg-elevated: #242426;
+    --bg-overlay: rgba(0, 0, 0, 0.75);
+
+    --border-default: rgba(255, 255, 255, 0.14);
+    --border-subtle: rgba(255, 255, 255, 0.09);
+    --border-strong: rgba(255, 255, 255, 0.26);
+    --border-hover: rgba(255, 255, 255, 0.22);
+    --border-glow: rgba(59, 130, 246, 0.35);
+
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.86);
+    --text-tertiary: rgba(255, 255, 255, 0.52);
+    --text-link: #2e8dff;
+
+    --accent-blue: #007aff;
+    --accent-blue-hover: #0062d6;
+    --accent-green: #30d158;
+    --accent-orange: #ff9f0a;
+    --accent-red: #ff453a;
+    --accent-purple: #bf5af2;
+    --accent-coffee: #a2845e;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --shadow-glow: 0 0 20px rgba(0, 122, 255, 0.15);
+    --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    --shadow-layered: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.06);
+
+    /* 缂撳姩鍑芥暟锛堝叡浜級 */
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-back: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+    --transition-fast: 180ms var(--ease-out-expo);
+    --transition-normal: 280ms var(--ease-out-expo);
+    --transition-slow: 450ms var(--ease-out-expo);
+
+    /* 九宫格分割线颜色 */
+    --grid-divider: #3a3a3c;
+  }
+
+  /* Apple 椋庢牸浜�壊 */
+  [data-style="apple"][data-theme="light"] {
+    --bg-primary: #f5f5f7;
+    --bg-secondary: #e8e8ed;
+    --bg-tertiary: #ffffff;
+    --bg-elevated: #ffffff;
+    --bg-overlay: rgba(245, 245, 247, 0.8);
+
+    --border-default: rgba(0, 0, 0, 0.08);
+    --border-subtle: rgba(0, 0, 0, 0.04);
+    --border-strong: rgba(0, 0, 0, 0.16);
+    --border-hover: rgba(0, 0, 0, 0.12);
+    --border-glow: rgba(0, 122, 255, 0.2);
+
+    --text-primary: #1d1d1f;
+    --text-secondary: rgba(0, 0, 0, 0.65);
+    --text-tertiary: rgba(0, 0, 0, 0.3);
+    --text-link: #007aff;
+
+    --accent-blue: #007aff;
+    --accent-blue-hover: #0062d6;
+    --accent-green: #34c759;
+    --accent-orange: #ff9500;
+    --accent-red: #ff3b30;
+    --accent-purple: #af52de;
+    --accent-coffee: #a2845e;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --shadow-glow: 0 0 20px rgba(0, 122, 255, 0.1);
+    --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    --shadow-layered: 0 2px 8px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  }
+
+  /* ===== Claude 风格（暗色） ===== */
+  [data-style="claude"]:root,
+  [data-style="claude"] {
+    --bg-primary: #0e0d0b;
+    --bg-secondary: #14130f;
+    --bg-tertiary: #1b1a17;
+    --bg-elevated: #222120;
+    --bg-overlay: rgba(14, 13, 11, 0.94);
+
+    --border-default: rgba(62, 62, 56, 0.55);
+    --border-subtle: rgba(62, 62, 56, 0.3);
+    --border-strong: rgba(90, 90, 80, 0.75);
+    --border-hover: rgba(90, 90, 80, 0.5);
+    --border-glow: rgba(217, 119, 87, 0.3);
+
+    --text-primary: #faf9f5;
+    --text-secondary: rgba(183, 181, 169, 0.94);
+    --text-tertiary: rgba(110, 109, 104, 0.72);
+    --text-link: #d97757;
+
+    --accent-blue: #d97757;
+    --accent-blue-hover: #c96442;
+    --accent-green: #8ca06f;
+    --accent-orange: #e08d6f;
+    --accent-red: #ef4444;
+    --accent-purple: #9c87f5;
+    --accent-coffee: #b0683f;
+
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.55);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.65);
+    --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.75);
+    --shadow-glow: 0 0 24px rgba(217, 119, 87, 0.15);
+    --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.04), inset 0 -1px 0 rgba(0, 0, 0, 0.5);
+    --shadow-layered: 0 4px 12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(62, 62, 56, 0.3);
+
+    /* 缂撳姩鍑芥暟锛堝叡浜級 */
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-back: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+    --transition-fast: 180ms var(--ease-out-expo);
+    --transition-normal: 280ms var(--ease-out-expo);
+    --transition-slow: 450ms var(--ease-out-expo);
+
+    /* Claude 风格：更圆润的圆角 */
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 18px;
+
+    /* 九宫格分割线颜色 */
+    --grid-divider: #1b1a17;
+  }
+  [data-style="claude"][data-theme="light"] {
+    --bg-primary: #f5f4ee;
+    --bg-secondary: #e9e6dc;
+    --bg-tertiary: #faf9f5;
+    --bg-elevated: #faf9f5;
+    --bg-overlay: rgba(245, 244, 238, 0.85);
+
+    --border-default: rgba(62, 62, 56, 0.15);
+    --border-subtle: rgba(62, 62, 56, 0.08);
+    --border-strong: rgba(62, 62, 56, 0.3);
+    --border-hover: rgba(62, 62, 56, 0.2);
+    --border-glow: rgba(217, 119, 87, 0.2);
+
+    --text-primary: #1b1b19;
+    --text-secondary: rgba(44, 44, 43, 0.8);
+    --text-tertiary: rgba(44, 44, 43, 0.45);
+    --text-link: #c96442;
+
+    --accent-blue: #c96442;
+    --accent-blue-hover: #b0683f;
+    --accent-green: #708353;
+    --accent-orange: #d97757;
+    --accent-red: #ef4444;
+    --accent-purple: #9c87f5;
+    --accent-coffee: #b0683f;
+
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
+    --shadow-glow: 0 0 24px rgba(217, 119, 87, 0.1);
+    --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    --shadow-layered: 0 4px 12px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(62, 62, 56, 0.1);
+  }
+
+  * {
+    border-color: var(--border-default);
+  }
+
+  /* html, body, #root 鍩虹鏍峰紡 */
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-weight: 500;
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: -apple-system, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    overflow: hidden;
+    user-select: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* 鑱婂ぉ娑堟伅鍐呭锛氬厑璁歌嚜鐢遍€夋嫨鍜屽鍒舵枃鏈?*/
+  .chat-message-content,
+  .chat-message-content *,
+  .chat-message-content p,
+  .chat-message-content pre,
+  .chat-message-content code,
+  .chat-message-content li,
+  .chat-message-content span,
+  .chat-message-content a,
+  .chat-message-content h1,
+  .chat-message-content h2,
+  .chat-message-content h3,
+  .chat-message-content h4,
+  .chat-message-content h5,
+  .chat-message-content h6,
+  .chat-message-content blockquote,
+  .chat-message-content td,
+  .chat-message-content th {
+    user-select: text;
+    -webkit-user-select: text;
+  }
+
+  /* 浠ｇ爜鍧楋細鍏佽閫夋嫨浣嗕笉鍦ㄩ€夋嫨鏃跺寘鍚鍙?*/
+  .chat-message-content pre code {
+    user-select: text;
+    -webkit-user-select: text;
+  }
+
+  /* 涓婚鍒囨崲鎵╂暎鍔ㄧ敾鐨勫渾褰㈤伄缃╁眰 */
+  #theme-transition-overlay {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: scale(0);
+    transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* 鍘熺敓 select 鐨?option 鍦?Windows 涓婄敱绯荤粺娓叉煋锛屾樉寮忚缃繁鑹茶儗鏅?+ 鐧借壊瀛楋紝閬垮厤鐧藉簳鐧藉瓧 */
+  select.dark-options option {
+    background-color: #1c1c1e;
+    color: #f5f5f7;
+  }
+  select.light-options option {
+    background-color: #ffffff;
+    color: #1d1d1f;
+  }
+
+  /* 鏇寸粏鏇翠紭闆呯殑婊氬姩鏉?*/
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+@layer components {
+  .drag-region {
+    -webkit-app-region: drag;
+  }
+
+  .no-drag {
+    -webkit-app-region: no-drag;
+  }
+}
+
+/* ===== 鍏ㄥ眬鍔ㄧ敾宸ュ叿绫?===== */
+
+/* 娣″叆涓婄Щ */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 娣″叆 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 缂╂斁娣″叆 */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 婊戝叆 */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 鍏夋爣闂儊锛堟祦寮忥級 */
+@keyframes blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* 鑴夊啿 */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* 鍛煎惛娴姩锛堢敤浜庣┖鐘舵€佸浘鏍囷級 */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* 鏃嬭浆娣″叆 */
+@keyframes rotateIn {
+  from {
+    opacity: 0;
+    transform: rotate(-3deg) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+}
+
+/* 绔嬩綋鍑歌捣锛堢敤浜庡崱鐗?hover锛?*/
+@keyframes liftUp {
+  from {
+    transform: translateY(0);
+    box-shadow: var(--shadow-sm);
+  }
+  to {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+/* 杈规娴佸厜锛堢櫧鐏板井鍏夋壂杩囷紝鏇夸唬鍘熷挅鍟¤壊锛?*/
+@keyframes borderShimmer {
+  0% {
+    border-color: var(--border-default);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 0 0 rgba(255, 255, 255, 0);
+  }
+  50% {
+    border-color: var(--border-hover);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 0 16px rgba(255, 255, 255, 0.15);
+  }
+  100% {
+    border-color: var(--border-default);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+/* 婊戝姩鎸囩ず鏉?*/
+@keyframes slideIndicator {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* 娓愬叆缂╂斁锛堢敤浜庝笅鎷夐潰鏉匡級 */
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.92) translateY(4px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.02) translateY(-1px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* 楂樺害灞曞紑锛堢敤浜庢姌鍙犲尯鍩燂級 */
+@keyframes expandDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 1000px;
+  }
+}
+
+/* 鍏夋尝鑴夊啿锛堢敤浜庣姸鎬佹寚绀虹偣锛?*/
+@keyframes pulseRing {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 400ms var(--ease-out-expo) both;
+}
+
+.animate-fade-in {
+  animation: fadeIn 300ms var(--ease-out-expo) both;
+}
+
+.animate-scale-in {
+  animation: scaleIn 200ms var(--ease-out-expo) both;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 300ms var(--ease-out-expo) both;
+}
+
+.animate-float {
+  animation: float 3s var(--ease-in-out-cubic) infinite;
+}
+
+.animate-pulse-soft {
+  animation: pulse 2s var(--ease-in-out-cubic) infinite;
+}
+
+.animate-rotate-in {
+  animation: rotateIn 350ms var(--ease-back) both;
+}
+
+.animate-pop-in {
+  animation: popIn 280ms var(--ease-back) both;
+}
+
+.animate-expand-down {
+  animation: expandDown 350ms var(--ease-out-expo) both;
+}
+
+/* 閫氱敤杩囨浮 */
+.transition-smooth {
+  transition: all 280ms var(--ease-out-expo);
+}
+
+.transition-smooth-fast {
+  transition: all 180ms var(--ease-out-expo);
+}
+
+.transition-smooth-slow {
+  transition: all 450ms var(--ease-out-expo);
+}
+
+/* 绾挎潯鍏夋檿鏁堟灉锛坔over 鏃剁櫧鐏拌竟妗嗗彉浜?+ 灞傛寰厜锛屾浛浠ｅ師鍜栧暋鑹诧級 */
+.line-glow {
+  transition: border-color 280ms var(--ease-out-expo),
+    box-shadow 280ms var(--ease-out-expo),
+    transform 280ms var(--ease-out-expo);
+}
+
+.line-glow:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1), var(--shadow-sm);
+}
+
+/* 绔嬩綋鍗＄墖锛堝灞傚唴闃村奖 + 澶栭槾褰卞鍔犲眰娆★紝鎶涘純鍗曚竴鐩寸嚎杈规锛?   閫氳繃 inset 楂樺厜/鏆楀奖鍒涢€犲嚫璧锋劅锛岃€岄潪浠呴潬 border 绾挎潯 */
+.surface-3d {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 50%, rgba(0, 0, 0, 0.2) 100%), var(--bg-tertiary);
+  box-shadow: var(--shadow-inset), var(--shadow-sm);
+  border: 1px solid var(--border-default);
+  transition: all 280ms var(--ease-out-expo);
+}
+
+.surface-3d:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-inset), var(--shadow-layered);
+  transform: translateY(-1px);
+}
+
+/* 绔嬩綋鍑歌捣鎸夐挳锛堝鍔犲眰娆★細鍐呴珮鍏?+ 澶栭槾褰憋紝鑰岄潪骞抽潰锛?*/
+.lift-button {
+  transition: transform 200ms var(--ease-back),
+    box-shadow 200ms var(--ease-out-expo),
+    background-color 200ms var(--ease-out-expo),
+    border-color 200ms var(--ease-out-expo);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -1px 0 rgba(0, 0, 0, 0.3), var(--shadow-sm);
+}
+
+.lift-button:hover {
+  transform: translateY(-1px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), inset 0 -1px 0 rgba(0, 0, 0, 0.3), var(--shadow-md), 0 0 12px rgba(255, 255, 255, 0.08);
+}
+
+.lift-button:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4), var(--shadow-sm);
+}
+
+/* 鐘舵€佹寚绀虹偣锛堝甫鍏夌幆鑴夊啿锛?*/
+.status-dot {
+  position: relative;
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.status-dot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: inherit;
+  animation: pulseRing 2s var(--ease-out-expo) infinite;
+}
+
+/* 杈规娴佸厜锛坔over 鏃朵竴娆℃壂杩囷級 */
+.border-shimmer:hover {
+  animation: borderShimmer 600ms var(--ease-out-expo);
+}
+
+/* ===== Markdown 娓叉煋鏍峰紡 ===== */
+.markdown-body {
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 1.7;
+  word-break: break-word;
+}
+
+.markdown-body > :first-child {
+  margin-top: 0;
+}
+
+.markdown-body > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body p {
+  margin: 0.5em 0;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  margin: 1em 0 0.5em;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.markdown-body h1 {
+  font-size: 1.5em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.markdown-body h2 {
+  font-size: 1.3em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.markdown-body h3 {
+  font-size: 1.15em;
+}
+
+.markdown-body h4 {
+  font-size: 1em;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+}
+
+.markdown-body li {
+  margin: 0.25em 0;
+}
+
+.markdown-body li > p {
+  margin: 0.25em 0;
+}
+
+/* 琛屽唴浠ｇ爜锛堢櫧鐏拌壊璋冿紝鏇夸唬鍘熸鑹诧紝淇濇寔灞傛鎰燂級 */
+.markdown-body code:not(.hljs) {
+  background-color: rgba(255, 255, 255, 0.08);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace;
+  font-size: 0.9em;
+  color: rgba(255, 255, 255, 0.85);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* 浠ｇ爜鍧楀鍣?*/
+.markdown-body pre {
+  margin: 0;
+  padding: 12px;
+  background-color: var(--bg-tertiary);
+  border-radius: 0 0 6px 6px;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.markdown-body pre code {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+.markdown-body blockquote {
+  margin: 0.75em 0;
+  padding: 0 1em;
+  color: var(--text-secondary);
+  border-left: 2px solid var(--border-strong);
+}
+
+.markdown-body blockquote > :first-child {
+  margin-top: 0;
+}
+
+.markdown-body blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body a {
+  color: var(--text-link);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: opacity 200ms var(--ease-out-expo);
+}
+
+.markdown-body a:hover {
+  opacity: 0.8;
+}
+
+.markdown-body table {
+  border-collapse: collapse;
+  margin: 0.75em 0;
+  display: block;
+  overflow-x: auto;
+}
+
+.markdown-body th,
+.markdown-body td {
+  border: 1px solid var(--border-default);
+  padding: 6px 10px;
+  text-align: left;
+}
+
+.markdown-body th {
+  background-color: var(--bg-tertiary);
+  font-weight: 600;
+}
+
+.markdown-body tr:nth-child(even) {
+  background-color: var(--bg-secondary);
+}
+
+.markdown-body hr {
+  margin: 1em 0;
+  border: none;
+  border-top: 1px solid var(--border-default);
+}
+
+.markdown-body img {
+  max-width: 100%;
+  border-radius: 4px;
+}
+
+/* ===== highlight.js github-dark 椋庢牸浠ｇ爜楂樹寒 ===== */
+.hljs {
+  color: #e6edf3;
+  background: transparent;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: #7d8590;
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-doctag,
+.hljs-meta .hljs-keyword {
+  color: #ff7b72;
+}
+
+.hljs-string,
+.hljs-regexp,
+.hljs-attr,
+.hljs-addition {
+  color: #a5d6ff;
+}
+
+.hljs-number,
+.hljs-symbol,
+.hljs-bullet {
+  color: #79c0ff;
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class {
+  color: #d2a8ff;
+}
+
+.hljs-variable,
+.hljs-template-variable,
+.hljs-attribute {
+  color: #ffa657;
+}
+
+.hljs-type,
+.hljs-class .hljs-title,
+.hljs-built_in,
+.hljs-builtin-name {
+  color: #ffa657;
+}
+
+.hljs-params {
+  color: #e6edf3;
+}
+
+.hljs-meta {
+  color: #7d8590;
+}
+
+.hljs-tag {
+  color: #7d8590;
+}
+
+.hljs-deletion {
+  color: #ffa198;
+  background-color: #490202;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: 700;
+}
+
+/* ===== 娴佸紡鍏夋爣鍔ㄧ敾 ===== */
+@keyframes blinkCursor {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.streaming-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 1em;
+  background: rgba(255, 255, 255, 0.9);
+  animation: blinkCursor 1s infinite;
+  vertical-align: text-bottom;
+  margin-left: 2px;
+  border-radius: 1px;
+  /* 鐧界伆鐐厜鏇夸唬钃濊壊鍏夋檿 */
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.4), 0 0 2px rgba(255, 255, 255, 0.6);
+}
+
+/* ===== 鏂囧瓧娴佸厜鍔ㄧ敾锛堢櫧鐏版笎鍙橈紝鏇夸唬钃濈传锛?===== */
+@keyframes textShimmer {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+.text-shimmer {
+  /* 浠庣櫧鑹查珮鍏夎繃娓″埌鐏拌壊锛屽啀鍒扮櫧鑹诧紝褰㈡垚閲戝睘璐ㄦ劅娴佸厜 */
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 1) 25%,
+    rgba(180, 180, 180, 0.7) 50%,
+    rgba(255, 255, 255, 1) 75%,
+    rgba(255, 255, 255, 0.5) 100%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShimmer 3s linear infinite;
+}
+
+.text-shimmer-gray {
+  background: linear-gradient(
+    90deg,
+    #888888 0%,
+    #ffffff 25%,
+    #888888 50%,
+    #ffffff 75%,
+    #888888 100%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShimmer 3s linear infinite;
+}
+
+/* ===== 杈规娴佸厜鍔ㄧ敾锛堝璇濋€変腑椤癸紝鐧界伆娓愬彉鏇夸唬钃濈传锛?===== */
+@keyframes borderGlow {
+  0%, 100% {
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.1), inset 0 0 4px rgba(255, 255, 255, 0.05);
+  }
+  25% {
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.25), inset 0 0 6px rgba(255, 255, 255, 0.1);
+  }
+  50% {
+    border-color: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.35), inset 0 0 8px rgba(255, 255, 255, 0.15);
+  }
+  75% {
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.25), inset 0 0 6px rgba(255, 255, 255, 0.1);
+  }
+}
+
+.border-glow-active {
+  animation: borderGlow 3s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+/* ===== 寮硅烦鐐规墦瀛楁寚绀哄櫒 ===== */
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
+  30% { transform: translateY(-6px); opacity: 1; }
+}
+
+.animate-typing-bounce {
+  animation: typingBounce 1.4s ease-in-out infinite;
+}
+
+/* PermissionDialog 閬僵灞?*/
+.permission-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+/* ===== 绔嬩綋灞傛宸ュ叿绫伙紙鎶涘純鐩寸嚎鏋勫浘锛岀敤闃村奖鍒涢€犲眰娆′箣鍒嗭級 ===== */
+
+/* 鍑歌捣闈㈡澘锛氶《閮ㄩ珮鍏?+ 搴曢儴鏆楀奖 + 杈圭紭鍐呭嚬锛屽舰鎴?娴嚭"鎰?*/
+.surface-raised {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, transparent 40%, rgba(0, 0, 0, 0.15) 100%), var(--bg-elevated);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.6),
+    0 1px 0 rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-default);
+}
+
+/* 鍑归櫡闈㈡澘锛氬唴鍑归槾褰憋紝褰㈡垚"闄峰叆"鎰燂紙鐢ㄤ簬杈撳叆妗嗐€佷唬鐮佸潡瀹瑰櫒锛?*/
+.surface-inset {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, transparent 50%, rgba(255, 255, 255, 0.02) 100%), var(--bg-tertiary);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.5),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+    0 1px 0 rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+}
+
+/* 娴姩鍗＄墖锛氬己鐑堢珛浣撴劅锛堢敤浜庢偓娴彍鍗曘€佸脊鍑哄眰锛?*/
+.surface-floating {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, transparent 30%), var(--bg-elevated);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 12px 32px rgba(0, 0, 0, 0.8),
+    0 4px 8px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+/* 鍒嗛殧灞傛绾匡細鐢ㄦ笎鍙樻浛浠ｇ洿绾匡紝涓婃祬涓嬫繁褰㈡垚绔嬩綋鍑规Ы */
+.divider-layered {
+  height: 1px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(0, 0, 0, 0.3) 100%);
+  border: none;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+}
+
+/* 绔嬩綋杈规锛氬弻灞傝竟缂橈紙澶栦寒鍐呮殫锛夛紝鏇夸唬鍗曚竴绾挎潯 */
+.border-layered {
+  border: 1px solid var(--border-default);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+/* 鐧界伆鐐厜楂樹寒锛坔over/focus 鏃堕噾灞炶川鎰熷厜鏅曪級 */
+.glow-monochrome {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.12),
+    0 0 16px rgba(255, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: box-shadow 280ms var(--ease-out-expo);
+}
+
+.glow-monochrome:hover {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.2),
+    0 0 24px rgba(255, 255, 255, 0.15),
+    0 0 8px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* 绔嬩綋鎸夐挳锛堜富鎿嶄綔锛氱櫧鐏伴噾灞炶川鎰燂級 */
+.btn-metallic {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(0, 0, 0, 0.2) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+    0 2px 6px rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--border-default);
+  transition: all 200ms var(--ease-out-expo);
+}
+
+.btn-metallic:hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.08) 50%, rgba(0, 0, 0, 0.2) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.6),
+    0 0 16px rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.btn-metallic:active {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.1) 100%);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+  transform: translateY(0) scale(0.98);
+}
+
+/* 鐜荤拑璐ㄦ劅闈㈡澘锛堝崐閫忔槑 + 妯＄硦 + 鐧界伆杈圭紭锛?*/
+.glass-panel {
+  background: rgba(20, 20, 20, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 8px 24px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+/* ===== 娴呰壊妯″紡瑕嗙洊锛氭仮澶嶆竻鐖芥祬鑹诧紝涓嶇敤鐧界伆娓愬彉 ===== */
+/* 鎮仠鍙犲眰锛堟浛浠?hover:bg-white/5锛屾祬鑹蹭笅鐢ㄩ粦鑹插井閫忔槑锛?*/
+:root {
+  --hover-surface: rgba(255, 255, 255, 0.06);
+  color-scheme: dark;
+}
+html[data-theme="light"] {
+  --hover-surface: rgba(0, 0, 0, 0.04);
+  color-scheme: light;
+}
+
+html:not([data-theme="light"]) textarea,
+html:not([data-theme="light"]) input[type="text"],
+html:not([data-theme="light"]) input[type="search"],
+html:not([data-theme="light"]) input[type="url"],
+html:not([data-theme="light"]) input[type="password"] {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+/* 娴佸紡鍏夋爣锛氭祬鑹蹭笅鐢ㄦ繁鑹?*/
+html[data-theme="light"] .streaming-cursor {
+  background: rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+}
+
+/* 鏂囧瓧娴佸厜锛氭祬鑹蹭笅鐢ㄦ繁鐏伴噾灞炶川鎰燂紙鏇夸唬鐧借壊娴佸厜锛岀櫧鑹插湪娴呭簳涓婁笉鍙锛?*/
+@keyframes textShimmerLight {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+html[data-theme="light"] .text-shimmer,
+html[data-theme="light"] .text-shimmer-gray {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.5) 0%,
+    rgba(0, 0, 0, 0.9) 25%,
+    rgba(100, 100, 100, 0.6) 50%,
+    rgba(0, 0, 0, 0.9) 75%,
+    rgba(0, 0, 0, 0.5) 100%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShimmerLight 3s linear infinite;
+}
+
+/* 杈规娴佸厜锛氭祬鑹蹭笅鐢ㄦ繁鑹茶竟妗嗭紙鏇夸唬鐧借壊锛岀櫧鑹插湪娴呭簳涓婁笉鍙锛?*/
+@keyframes borderGlowLight {
+  0%, 100% {
+    border-color: rgba(0, 0, 0, 0.15);
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.05);
+  }
+  50% {
+    border-color: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.12);
+  }
+}
+html[data-theme="light"] .border-glow-active {
+  animation: borderGlowLight 3s ease-in-out infinite;
+}
+
+/* 杈规鎵厜锛氭祬鑹蹭笅鐢ㄦ繁鑹?*/
+@keyframes borderShimmerLight {
+  0% {
+    border-color: var(--border-default);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 0 0 rgba(0, 0, 0, 0);
+  }
+  50% {
+    border-color: var(--border-strong);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 0 12px rgba(0, 0, 0, 0.1);
+  }
+  100% {
+    border-color: var(--border-default);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+html[data-theme="light"] .border-shimmer:hover {
+  animation: borderShimmerLight 600ms var(--ease-out-expo);
+}
+
+/* 绔嬩綋鍗＄墖锛氭祬鑹蹭笅鐢ㄦ竻鐖芥祬鑹查槾褰憋紙鏇夸唬鐧界伆娓愬彉锛?*/
+html[data-theme="light"] .surface-3d {
+  background: var(--bg-tertiary);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-default);
+}
+html[data-theme="light"] .surface-3d:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+/* 绾挎潯鍏夋檿锛氭祬鑹蹭笅鐢ㄦ繁鑹插井鍏夛紙鏇夸唬鐧借壊鍏夋檿锛?*/
+html[data-theme="light"] .line-glow:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08), var(--shadow-sm);
+}
+
+/* 绔嬩綋鎸夐挳锛氭祬鑹蹭笅娓呯埥锛堟浛浠ｇ櫧鐏板唴鍑癸級 */
+html[data-theme="light"] .lift-button {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), var(--shadow-sm);
+}
+html[data-theme="light"] .lift-button:hover {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), var(--shadow-md), 0 0 8px rgba(0, 0, 0, 0.06);
+}
+html[data-theme="light"] .lift-button:active {
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1), var(--shadow-sm);
+}
+
+/* 琛屽唴浠ｇ爜锛氭祬鑹蹭笅鐢ㄦ祬鐏拌儗鏅?+ 娣辫壊瀛楋紙鏇夸唬鐧藉簳鐧藉瓧锛?*/
+html[data-theme="light"] .markdown-body code:not(.hljs) {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: rgba(0, 0, 0, 0.85);
+  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.04), inset 0 -1px 0 rgba(255, 255, 255, 0.6);
+}
+
+/* 绔嬩綋灞傛宸ュ叿绫伙細娴呰壊涓嬬敤娓呯埥娴呰壊闃村奖锛堟浛浠ｇ櫧鐏版笎鍙橈級 */
+html[data-theme="light"] .surface-raised {
+  background: var(--bg-elevated);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--border-default);
+}
+html[data-theme="light"] .surface-inset {
+  background: var(--bg-tertiary);
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.06),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--border-subtle);
+}
+html[data-theme="light"] .surface-floating {
+  background: var(--bg-elevated);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 8px 24px rgba(0, 0, 0, 0.12),
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+html[data-theme="light"] .divider-layered {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.02) 100%);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+html[data-theme="light"] .border-layered {
+  border: 1px solid var(--border-default);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 0 0 1px rgba(0, 0, 0, 0.03);
+}
+html[data-theme="light"] .glow-monochrome {
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.08),
+    0 0 12px rgba(0, 0, 0, 0.05);
+}
+html[data-theme="light"] .glow-monochrome:hover {
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.15),
+    0 0 16px rgba(0, 0, 0, 0.08);
+}
+html[data-theme="light"] .btn-metallic {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 240, 240, 0.6) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-default);
+}
+html[data-theme="light"] .btn-metallic:hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 1) 0%, rgba(240, 240, 240, 0.8) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    0 4px 8px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
+}
+html[data-theme="light"] .btn-metallic:active {
+  background: linear-gradient(180deg, rgba(230, 230, 230, 0.8) 0%, rgba(220, 220, 220, 0.6) 100%);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  transform: translateY(0) scale(0.98);
+}
+
+html[data-theme="light"] .glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 8px 24px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+/* 娴呰壊妯″紡婊氬姩鏉?*/
+html[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+}
+html[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* 娴呰壊妯″紡锛氬皢鎵€鏈?bg-white/5銆乥g-white/10銆乥g-white/[0.03] 閫忔槑鍙犲眰
+   鍙嶈浆涓洪粦鑹查€忔槑鍙犲眰锛堢櫧鑹插彔灞傚湪鐧藉簳涓婁笉鍙锛夈€?   瑕嗙洊 Tailwind 鐢熸垚鐨勫伐鍏风被锛岄伩鍏嶉€愪釜鏂囦欢淇敼銆?*/
+html[data-theme="light"] .bg-white\/5 { background-color: rgba(0, 0, 0, 0.05); }
+html[data-theme="light"] .bg-white\/10 { background-color: rgba(0, 0, 0, 0.08); }
+html[data-theme="light"] .bg-white\/\[0\.03\] { background-color: rgba(0, 0, 0, 0.03); }
+html[data-theme="light"] .hover\:bg-white\/5:hover { background-color: rgba(0, 0, 0, 0.05); }
+html[data-theme="light"] .hover\:bg-white\/10:hover { background-color: rgba(0, 0, 0, 0.08); }
+html[data-theme="light"] .hover\:bg-white\/\[0\.03\]:hover { background-color: rgba(0, 0, 0, 0.03); }
+
+/* ===== 鑻规灉椋庢牸涓撳睘宸ュ叿绫昏鐩?===== */
+
+/* 鑻规灉椋庢牸锛氭瘺鐜荤拑鏁堟灉 + 鏇村渾娑︾殑鍦嗚 */
+[data-style="apple"] .surface-3d {
+  background: rgba(28, 28, 30, 0.8);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+[data-style="apple"][data-theme="light"] .surface-3d {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+[data-style="apple"] .glass-panel {
+  background: rgba(28, 28, 30, 0.65);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+[data-style="apple"][data-theme="light"] .glass-panel {
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+[data-style="apple"] .surface-raised {
+  background: rgba(44, 44, 46, 0.8);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+[data-style="apple"][data-theme="light"] .surface-raised {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+[data-style="apple"] .surface-floating {
+  background: rgba(44, 44, 46, 0.85);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+[data-style="apple"][data-theme="light"] .surface-floating {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+}
+
+[data-style="apple"] .surface-inset {
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+[data-style="apple"][data-theme="light"] .surface-inset {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+/* 鑻规灉椋庢牸锛氭洿鏌斿拰鐨勬寜閽?*/
+[data-style="apple"] .lift-button {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+}
+[data-style="apple"] .lift-button:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+[data-style="apple"] .btn-metallic {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+[data-style="apple"][data-theme="light"] .btn-metallic {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+/* Apple 风格滚动条：macOS overlay 风格，窄轨道 + 圆角拇指 */
+[data-style="apple"] ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+[data-style="apple"] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+[data-style="apple"] ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+[data-style="apple"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+  background-clip: content-box;
+}
+[data-style="apple"][data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.22);
+  background-clip: content-box;
+}
+[data-style="apple"][data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.38);
+  background-clip: content-box;
+}
+
+/* Apple 风格：禁用全局通配过渡（Apple HIG 不在所有元素上动画）
+   仅保留明确使用 transition-smooth 类的元素过渡 */
+[data-style="apple"] html * {
+  transition: none !important;
+}
+[data-style="apple"] .transition-smooth,
+[data-style="apple"] .transition-smooth-fast,
+[data-style="apple"] .transition-smooth-slow,
+[data-style="apple"] .line-glow,
+[data-style="apple"] .surface-3d,
+[data-style="apple"] .lift-button,
+[data-style="apple"] .btn-metallic,
+[data-style="apple"] .glass-panel,
+[data-style="apple"] .surface-raised,
+[data-style="apple"] .surface-floating,
+[data-style="apple"] .surface-inset,
+[data-style="apple"] .glow-monochrome,
+[data-style="apple"] .border-shimmer,
+[data-style="apple"] .border-layered {
+  transition: background-color 320ms ease, color 280ms ease,
+    border-color 280ms ease, box-shadow 320ms ease,
+    opacity 250ms ease, transform 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Apple 风格：蓝色调流式光标（替代白色光晕） */
+[data-style="apple"] .streaming-cursor {
+  background: rgba(0, 122, 255, 0.85);
+  box-shadow: 0 0 8px rgba(0, 122, 255, 0.5), 0 0 2px rgba(0, 122, 255, 0.7);
+  border-radius: 2px;
+}
+[data-style="apple"][data-theme="light"] .streaming-cursor {
+  background: rgba(0, 122, 255, 0.75);
+  box-shadow: 0 0 6px rgba(0, 122, 255, 0.3);
+}
+
+/* Apple 风格：蓝色调边框发光（替代白色/彩色） */
+@keyframes borderGlowApple {
+  0%, 100% {
+    border-color: rgba(0, 122, 255, 0.2);
+    box-shadow: 0 0 4px rgba(0, 122, 255, 0.1), inset 0 0 4px rgba(0, 122, 255, 0.03);
+  }
+  50% {
+    border-color: rgba(0, 122, 255, 0.5);
+    box-shadow: 0 0 12px rgba(0, 122, 255, 0.2), inset 0 0 8px rgba(0, 122, 255, 0.06);
+  }
+}
+[data-style="apple"] .border-glow-active {
+  animation: borderGlowApple 3s ease-in-out infinite;
+  border-radius: 10px;
+}
+
+/* Apple 风格：文字流光用蓝色调（替代白/灰渐变） */
+@keyframes textShimmerApple {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+[data-style="apple"] .text-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 122, 255, 0.4) 0%,
+    rgba(0, 122, 255, 0.85) 25%,
+    rgba(88, 86, 214, 0.5) 50%,
+    rgba(0, 122, 255, 0.85) 75%,
+    rgba(0, 122, 255, 0.4) 100%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShimmerApple 3s linear infinite;
+}
+[data-style="apple"][data-theme="light"] .text-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 100, 200, 0.4) 0%,
+    rgba(0, 100, 200, 0.85) 25%,
+    rgba(88, 86, 214, 0.4) 50%,
+    rgba(0, 100, 200, 0.85) 75%,
+    rgba(0, 100, 200, 0.4) 100%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShimmerApple 3s linear infinite;
+}
+
+/* Apple 风格：边框扫光用蓝色调 */
+@keyframes borderShimmerApple {
+  0% {
+    border-color: rgba(0, 122, 255, 0.15);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 0 0 rgba(0, 122, 255, 0);
+  }
+  50% {
+    border-color: rgba(0, 122, 255, 0.4);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 16px rgba(0, 122, 255, 0.2);
+  }
+  100% {
+    border-color: rgba(0, 122, 255, 0.15);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 0 0 rgba(0, 122, 255, 0);
+  }
+}
+[data-style="apple"] .border-shimmer:hover {
+  animation: borderShimmerApple 600ms ease;
+}
+
+/* Apple 风格：浅色模式边框扫光 */
+@keyframes borderShimmerAppleLight {
+  0% {
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 0 0 rgba(0, 122, 255, 0);
+  }
+  50% {
+    border-color: rgba(0, 122, 255, 0.3);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 0 12px rgba(0, 122, 255, 0.12);
+  }
+  100% {
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 0 0 rgba(0, 122, 255, 0);
+  }
+}
+[data-style="apple"][data-theme="light"] .border-shimmer:hover {
+  animation: borderShimmerAppleLight 600ms ease;
+}
+
+/* Apple 风格：浅色模式蓝色边框发光 */
+@keyframes borderGlowAppleLight {
+  0%, 100% {
+    border-color: rgba(0, 122, 255, 0.15);
+    box-shadow: 0 0 4px rgba(0, 122, 255, 0.08);
+  }
+  50% {
+    border-color: rgba(0, 122, 255, 0.4);
+    box-shadow: 0 0 10px rgba(0, 122, 255, 0.15);
+  }
+}
+[data-style="apple"][data-theme="light"] .border-glow-active {
+  animation: borderGlowAppleLight 3s ease-in-out infinite;
+  border-radius: 10px;
+}
+
+/* Apple 风格：圆角方框消息气泡
+   用户/AI 消息统一用主题背景色的圆角方框，不覆盖颜色 */
+[data-style="apple"] [data-message-role="user"] .chat-message-content,
+[data-style="apple"] [data-message-role="user"] .rounded-xl.border {
+  border-radius: 12px;
+  box-shadow: none;
+}
+[data-style="apple"][data-theme="light"] [data-message-role="user"] .chat-message-content,
+[data-style="apple"][data-theme="light"] [data-message-role="user"] .rounded-xl.border {
+  box-shadow: none;
+}
+
+/* AI 消息：同样保持默认圆角方框 */
+[data-style="apple"] [data-message-role="assistant"] .chat-message-content.border-l {
+  border-left: none;
+}
+[data-style="apple"] [data-message-role="assistant"] .rounded-xl.border {
+  border-radius: 12px;
+  box-shadow: none;
+}
+[data-style="apple"][data-theme="light"] [data-message-role="assistant"] .rounded-xl.border {
+  box-shadow: none;
+}
+
+/* Apple + Claude 风格：圆形头像（仅匹配 .msg-avatar，避免误伤消息内的按钮） */
+[data-style="apple"] [data-message-role="user"] .msg-avatar,
+[data-style="apple"] [data-message-role="assistant"] .msg-avatar,
+[data-style="claude"] [data-message-role="user"] .msg-avatar,
+[data-style="claude"] [data-message-role="assistant"] .msg-avatar {
+  border-radius: 50% !important;
+  border: none !important;
+  overflow: hidden;
+}
+[data-style="apple"] [data-message-role="assistant"] .msg-avatar {
+  background: linear-gradient(135deg, #007aff, #5856d6) !important;
+}
+[data-style="claude"] [data-message-role="assistant"] .msg-avatar {
+  background: linear-gradient(135deg, #d97757, #b0683f) !important;
+}
+
+/* Apple 风格：消息气泡内字号微调 */
+[data-style="apple"] .chat-message-content {
+  font-size: 14px;
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+}
+
+/* Apple 风格：line-glow 用蓝色调替代白色 */
+[data-style="apple"] .line-glow:hover {
+  border-color: rgba(0, 122, 255, 0.3);
+  box-shadow: 0 0 16px rgba(0, 122, 255, 0.12), var(--shadow-sm);
+}
+[data-style="apple"][data-theme="light"] .line-glow:hover {
+  border-color: rgba(0, 122, 255, 0.25);
+  box-shadow: 0 0 12px rgba(0, 122, 255, 0.08), var(--shadow-sm);
+}
+
+/* Apple 风格：glow-monochrome 用蓝色调 */
+[data-style="apple"] .glow-monochrome {
+  box-shadow: 0 0 0 1px rgba(0, 122, 255, 0.08), 0 0 16px rgba(0, 122, 255, 0.06);
+}
+[data-style="apple"] .glow-monochrome:hover {
+  box-shadow: 0 0 0 1px rgba(0, 122, 255, 0.15), 0 0 24px rgba(0, 122, 255, 0.12);
+}
+[data-style="apple"][data-theme="light"] .glow-monochrome {
+  box-shadow: 0 0 0 1px rgba(0, 122, 255, 0.06), 0 0 12px rgba(0, 122, 255, 0.04);
+}
+[data-style="apple"][data-theme="light"] .glow-monochrome:hover {
+  box-shadow: 0 0 0 1px rgba(0, 122, 255, 0.12), 0 0 16px rgba(0, 122, 255, 0.08);
+}
+
+/* Apple 风格：shadow-glow 用蓝色调 */
+[data-style="apple"] .shadow-glow,
+[data-style="apple"] [style*="shadow-glow"] {
+  --shadow-glow: 0 0 24px rgba(0, 122, 255, 0.18), 0 0 8px rgba(0, 122, 255, 0.1);
+}
+[data-style="apple"][data-theme="light"] {
+  --shadow-glow: 0 0 20px rgba(0, 122, 255, 0.12), 0 0 6px rgba(0, 122, 255, 0.06);
+}
+
+/* Apple 风格：ThinkingBlock 表面更柔和 */
+[data-style="apple"] .surface-3d {
+  border-radius: 14px;
+}
+
+/* Apple 风格：按钮圆角更统一 */
+[data-style="apple"] button {
+  border-radius: 8px;
+}
+
+/* Apple 风格：PermissionDialog 更柔和的毛玻璃 */
+[data-style="apple"] .permission-overlay {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+}
+
+/* Apple 风格：select 暗色 option 统一 Apple 灰 */
+[data-style="apple"] select.dark-options option {
+  background: #2c2c2e;
+  color: #f5f5f7;
+}
+[data-style="apple"][data-theme="light"] select.light-options option {
+  background: #ffffff;
+  color: #1d1d1f;
+}
+
+/* ===== 璞嗗寘椋庢牸涓撳睘宸ュ叿绫昏鐩?===== */
+[data-style="claude"] .surface-3d {
+  background: rgba(27, 27, 25, 0.8);
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  border: 1px solid rgba(217, 119, 87, 0.12);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(217, 119, 87, 0.1);
+}
+[data-style="claude"][data-theme="light"] .surface-3d {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(217, 119, 87, 0.1);
+  box-shadow: 0 2px 8px rgba(217, 119, 87, 0.06);
+}
+
+[data-style="claude"] .glass-panel {
+  background: rgba(27, 27, 25, 0.7);
+  backdrop-filter: blur(30px) saturate(120%);
+  -webkit-backdrop-filter: blur(30px) saturate(120%);
+  border: 1px solid rgba(217, 119, 87, 0.15);
+  box-shadow: 0 8px 32px rgba(217, 119, 87, 0.15);
+}
+[data-style="claude"][data-theme="light"] .glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(217, 119, 87, 0.08);
+  box-shadow: 0 8px 32px rgba(217, 119, 87, 0.08);
+}
+
+[data-style="claude"] .surface-raised {
+  background: rgba(38, 38, 36, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(217, 119, 87, 0.12);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(217, 119, 87, 0.1);
+}
+[data-style="claude"][data-theme="light"] .surface-raised {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(217, 119, 87, 0.08);
+  box-shadow: 0 2px 8px rgba(217, 119, 87, 0.06);
+}
+
+[data-style="claude"] .surface-floating {
+  background: rgba(27, 27, 25, 0.85);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(217, 119, 87, 0.15);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(217, 119, 87, 0.15);
+}
+[data-style="claude"][data-theme="light"] .surface-floating {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(217, 119, 87, 0.08);
+  box-shadow: 0 12px 40px rgba(217, 119, 87, 0.08);
+}
+
+[data-style="claude"] .surface-inset {
+  background: rgba(44, 44, 43, 0.4);
+  border: 1px solid rgba(217, 119, 87, 0.08);
+  border-radius: 8px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+[data-style="claude"][data-theme="light"] .surface-inset {
+  background: rgba(217, 119, 87, 0.04);
+  border: 1px solid rgba(217, 119, 87, 0.08);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+[data-style="claude"] .lift-button {
+  box-shadow: 0 1px 3px rgba(217, 119, 87, 0.1);
+  border-radius: 8px;
+}
+[data-style="claude"] .lift-button:hover {
+  box-shadow: 0 2px 8px rgba(217, 119, 87, 0.2), 0 0 12px rgba(217, 119, 87, 0.1);
+}
+
+[data-style="claude"] .btn-metallic {
+  background: rgba(217, 119, 87, 0.1);
+  border: 1px solid rgba(217, 119, 87, 0.15);
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(217, 119, 87, 0.1);
+}
+[data-style="claude"][data-theme="light"] .btn-metallic {
+  background: rgba(217, 119, 87, 0.06);
+  border: 1px solid rgba(217, 119, 87, 0.1);
+  box-shadow: 0 1px 4px rgba(217, 119, 87, 0.06);
+}
+
+[data-style="claude"] ::-webkit-scrollbar-thumb {
+  background: rgba(217, 119, 87, 0.2);
+  border-radius: 4px;
+}
+[data-style="claude"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(217, 119, 87, 0.4);
+}
+[data-style="claude"][data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: rgba(217, 119, 87, 0.2);
+}
+[data-style="claude"][data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(217, 119, 87, 0.4);
+}
+
+/* ===== Claude 风格专属 UI 打磨 ===== */
+
+/* Claude 风格：流式光标 — 暖橙色柔光 */
+[data-style="claude"] .streaming-cursor {
+  background: rgba(217, 119, 87, 0.85);
+  box-shadow: 0 0 6px rgba(217, 119, 87, 0.4), 0 0 2px rgba(217, 119, 87, 0.6);
+  border-radius: 2px;
+}
+[data-style="claude"][data-theme="light"] .streaming-cursor {
+  background: rgba(201, 100, 66, 0.8);
+  box-shadow: 0 0 5px rgba(201, 100, 66, 0.3);
+}
+
+/* Claude 风格：边框发光 — 暖橙色呼吸 */
+@keyframes borderGlowClaude {
+  0%, 100% {
+    border-color: rgba(217, 119, 87, 0.15);
+    box-shadow: 0 0 4px rgba(217, 119, 87, 0.08), inset 0 0 4px rgba(217, 119, 87, 0.02);
+  }
+  50% {
+    border-color: rgba(217, 119, 87, 0.4);
+    box-shadow: 0 0 14px rgba(217, 119, 87, 0.15), inset 0 0 8px rgba(217, 119, 87, 0.04);
+  }
+}
+[data-style="claude"] .border-glow-active {
+  animation: borderGlowClaude 3.5s ease-in-out infinite;
+  border-radius: 12px;
+}
+
+/* Claude 风格：文字流光 — 暖色渐变 */
+@keyframes textShimmerClaude {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+[data-style="claude"] .text-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(217, 119, 87, 0.3) 0%,
+    rgba(217, 119, 87, 0.85) 25%,
+    rgba(176, 104, 63, 0.5) 50%,
+    rgba(217, 119, 87, 0.85) 75%,
+    rgba(217, 119, 87, 0.3) 100%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShimmerClaude 3.5s linear infinite;
+}
+[data-style="claude"][data-theme="light"] .text-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(201, 100, 66, 0.3) 0%,
+    rgba(201, 100, 66, 0.85) 25%,
+    rgba(176, 104, 63, 0.4) 50%,
+    rgba(201, 100, 66, 0.85) 75%,
+    rgba(201, 100, 66, 0.3) 100%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShimmerClaude 3.5s linear infinite;
+}
+
+/* Claude 风格：边框扫光 — 暖色 */
+@keyframes borderShimmerClaude {
+  0% {
+    border-color: rgba(217, 119, 87, 0.12);
+    box-shadow: inset 0 1px 0 rgba(250, 249, 245, 0.03), 0 0 0 rgba(217, 119, 87, 0);
+  }
+  50% {
+    border-color: rgba(217, 119, 87, 0.35);
+    box-shadow: inset 0 1px 0 rgba(250, 249, 245, 0.06), 0 0 18px rgba(217, 119, 87, 0.15);
+  }
+  100% {
+    border-color: rgba(217, 119, 87, 0.12);
+    box-shadow: inset 0 1px 0 rgba(250, 249, 245, 0.03), 0 0 0 rgba(217, 119, 87, 0);
+  }
+}
+[data-style="claude"] .border-shimmer:hover {
+  animation: borderShimmerClaude 650ms ease;
+}
+
+/* Claude 浅色模式边框扫光 */
+@keyframes borderShimmerClaudeLight {
+  0% {
+    border-color: rgba(27, 27, 25, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 0 0 rgba(217, 119, 87, 0);
+  }
+  50% {
+    border-color: rgba(217, 119, 87, 0.25);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 0 14px rgba(217, 119, 87, 0.1);
+  }
+  100% {
+    border-color: rgba(27, 27, 25, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 0 0 rgba(217, 119, 87, 0);
+  }
+}
+[data-style="claude"][data-theme="light"] .border-shimmer:hover {
+  animation: borderShimmerClaudeLight 650ms ease;
+}
+
+/* Claude 浅色模式边框发光 */
+@keyframes borderGlowClaudeLight {
+  0%, 100% {
+    border-color: rgba(217, 119, 87, 0.1);
+    box-shadow: 0 0 4px rgba(217, 119, 87, 0.06);
+  }
+  50% {
+    border-color: rgba(217, 119, 87, 0.35);
+    box-shadow: 0 0 12px rgba(217, 119, 87, 0.12);
+  }
+}
+[data-style="claude"][data-theme="light"] .border-glow-active {
+  animation: borderGlowClaudeLight 3.5s ease-in-out infinite;
+  border-radius: 12px;
+}
+
+/* Claude 风格：圆角方框消息气泡 — 背景色跟随主题 */
+[data-style="claude"] [data-message-role="user"] .chat-message-content,
+[data-style="claude"] [data-message-role="user"] .rounded-xl.border {
+  border-radius: 12px;
+  box-shadow: none;
+}
+[data-style="claude"][data-theme="light"] [data-message-role="user"] .chat-message-content,
+[data-style="claude"][data-theme="light"] [data-message-role="user"] .rounded-xl.border {
+  box-shadow: none;
+}
+
+/* AI 消息：保持默认圆角方框 */
+[data-style="claude"] [data-message-role="assistant"] .chat-message-content.border-l {
+  border-left: none;
+}
+[data-style="claude"][data-theme="light"] [data-message-role="assistant"] .chat-message-content.border-l {
+  border-left: none;
+}
+[data-style="claude"] [data-message-role="assistant"] .rounded-xl.border {
+  border-radius: 12px;
+  box-shadow: none;
+}
+[data-style="claude"][data-theme="light"] [data-message-role="assistant"] .rounded-xl.border {
+  box-shadow: none;
+}
+
+/* Claude 风格：消息排版 — 更宽松行高 */
+[data-style="claude"] .chat-message-content {
+  font-size: 14px;
+  line-height: 1.65;
+  letter-spacing: 0.005em;
+}
+
+/* Claude 风格：line-glow 暖橙 */
+[data-style="claude"] .line-glow:hover {
+  border-color: rgba(217, 119, 87, 0.3);
+  box-shadow: 0 0 16px rgba(217, 119, 87, 0.1), var(--shadow-sm);
+}
+[data-style="claude"][data-theme="light"] .line-glow:hover {
+  border-color: rgba(217, 119, 87, 0.25);
+  box-shadow: 0 0 12px rgba(217, 119, 87, 0.06), var(--shadow-sm);
+}
+
+/* Claude 风格：glow-monochrome 暖橙 */
+[data-style="claude"] .glow-monochrome {
+  box-shadow: 0 0 0 1px rgba(217, 119, 87, 0.06), 0 0 16px rgba(217, 119, 87, 0.05);
+}
+[data-style="claude"] .glow-monochrome:hover {
+  box-shadow: 0 0 0 1px rgba(217, 119, 87, 0.12), 0 0 24px rgba(217, 119, 87, 0.1);
+}
+[data-style="claude"][data-theme="light"] .glow-monochrome {
+  box-shadow: 0 0 0 1px rgba(217, 119, 87, 0.05), 0 0 12px rgba(217, 119, 87, 0.03);
+}
+[data-style="claude"][data-theme="light"] .glow-monochrome:hover {
+  box-shadow: 0 0 0 1px rgba(217, 119, 87, 0.1), 0 0 16px rgba(217, 119, 87, 0.07);
+}
+
+/* Claude 风格：shadow-glow 暖橙 */
+[data-style="claude"] .shadow-glow,
+[data-style="claude"] [style*="shadow-glow"] {
+  --shadow-glow: 0 0 24px rgba(217, 119, 87, 0.15), 0 0 8px rgba(217, 119, 87, 0.08);
+}
+[data-style="claude"][data-theme="light"] {
+  --shadow-glow: 0 0 20px rgba(217, 119, 87, 0.1), 0 0 6px rgba(217, 119, 87, 0.05);
+}
+
+/* Claude 风格：滚动条 — 暖色调窄轨道 */
+[data-style="claude"] ::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+[data-style="claude"] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+[data-style="claude"] ::-webkit-scrollbar-thumb {
+  background: rgba(217, 119, 87, 0.18);
+  border-radius: 4px;
+}
+[data-style="claude"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(217, 119, 87, 0.35);
+}
+[data-style="claude"][data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: rgba(62, 62, 56, 0.15);
+}
+[data-style="claude"][data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(62, 62, 56, 0.3);
+}
+
+/* Claude 风格：按钮统一圆角 */
+[data-style="claude"] button {
+  border-radius: 8px;
+}
+
+/* Claude 风格：PermissionDialog 暖色遮罩 */
+[data-style="claude"] .permission-overlay {
+  background: rgba(14, 13, 11, 0.55);
+  backdrop-filter: blur(6px) saturate(110%);
+  -webkit-backdrop-filter: blur(6px) saturate(110%);
+}
+
+/* Claude 风格：ThinkingBlock 更有机的圆角 */
+[data-style="claude"] .surface-3d {
+  border-radius: 12px;
+}
+
+/* ===== 椋庢牸涓撳睘 Select Option 棰滆壊瑕嗙洊 ===== */
+/* Apple 暗色 */
+[data-style="apple"] select.dark-options option {
+  background: #2c2c2e;
+  color: #f5f5f7;
+}
+/* Apple 浜壊 */
+[data-style="apple"][data-theme="light"] select.light-options option {
+  background: #ffffff;
+  color: #1d1d1f;
+}
+/* Claude 暗色 */
+[data-style="claude"][data-theme="dark"] select.dark-options option {
+  background: #1b1a17;
+  color: #faf9f5;
+}
+/* Claude 亮色 */
+[data-style="claude"][data-theme="light"] select.light-options option {
+  background: #ffffff;
+  color: #1b1b19;
+}
+
+/* ===== 鍏ㄥ眬涓婚椋庢牸鍒囨崲杩囨浮锛氬綋 data-style 鍙樺寲鏃舵墍鏈夊睘鎬у钩婊戣繃娓?===== */
+html {
+  transition: background-color 400ms ease, color 400ms ease, border-color 400ms ease, box-shadow 400ms ease;
+}
+html * {
+  transition: background-color 280ms ease, color 280ms ease, border-color 280ms ease, box-shadow 280ms ease;
+}
+/* 鎺掗櫎宸叉湁鑷繁 transition 鐨勫厓绱?*/
+html .no-transition,
+html .no-transition * {
+  transition: none !important;
+}
+
+
+/* ===== Global Font Weight Enhancement ===== */
+html {
+  font-weight: 600;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+.font-thin { font-weight: 300 !important; }
+.font-extralight { font-weight: 400 !important; }
+.font-light { font-weight: 500 !important; }
+.font-normal { font-weight: 600 !important; }
+.font-medium { font-weight: 700 !important; }
+.font-semibold { font-weight: 800 !important; }
+.font-bold { font-weight: 900 !important; }
+
+/* ===== Claude 风格专属：字体、更深侧边栏、独特视觉 ===== */
+
+/* Claude 字体系统：标题用 Poppins，正文用 Lora */
+[data-style="claude"] body,
+[data-style="claude"] #root {
+  font-family: 'Lora', Georgia, 'Microsoft YaHei', ui-serif, serif;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+[data-style="claude"] h1,
+[data-style="claude"] h2,
+[data-style="claude"] h3,
+[data-style="claude"] h4,
+[data-style="claude"] h5,
+[data-style="claude"] h6,
+[data-style="claude"] .font-heading,
+[data-style="claude"] [class*="font-semibold"],
+[data-style="claude"] [class*="font-bold"],
+[data-style="claude"] [class*="font-medium"] {
+  font-family: 'Poppins', ui-sans-serif, 'Microsoft YaHei', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+[data-style="claude"] code,
+[data-style="claude"] pre,
+[data-style="claude"] .font-mono,
+[data-style="claude"] [class*="mono"] {
+  font-family: 'Geist Mono', 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* Claude 更深侧边栏和聊天区域（仅暗色模式） */
+[data-style="claude"][data-theme="dark"] [data-sidebar],
+[data-style="claude"][data-theme="dark"] .sidebar {
+  background-color: #0e0d0b !important;
+  border-color: rgba(217, 119, 87, 0.1) !important;
+}
+
+[data-style="claude"][data-theme="dark"] [data-chat-area],
+[data-style="claude"][data-theme="dark"] .chat-area {
+  background-color: #0e0d0b !important;
+}
+
+/* Claude 浅色模式侧边栏和聊天区域 */
+[data-style="claude"][data-theme="light"] [data-sidebar],
+[data-style="claude"][data-theme="light"] .sidebar {
+  background-color: #e9e6dc !important;
+  border-color: rgba(217, 119, 87, 0.08) !important;
+}
+
+[data-style="claude"][data-theme="light"] [data-chat-area],
+[data-style="claude"][data-theme="light"] .chat-area {
+  background-color: #f5f4ee !important;
+}
+
+/* Claude 风格的独特表面处理：更温暖、更柔和 */
+[data-style="claude"] .surface-3d {
+  background: rgba(27, 27, 25, 0.85);
+  border: 1px solid rgba(217, 119, 87, 0.08);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+[data-style="claude"] .surface-3d:hover {
+  border-color: rgba(217, 119, 87, 0.18);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* Claude 风格输入框和按钮 */
+[data-style="claude"] textarea,
+[data-style="claude"] input[type="text"],
+[data-style="claude"] input[type="search"] {
+  font-family: 'Lora', Georgia, ui-serif, serif;
+  border-radius: 10px;
+}
+
+[data-style="claude"] button {
+  border-radius: 8px;
+}
+
+/* Claude 风格消息气泡：无圆角卡片，直接文本 */
+[data-style="claude"] .chat-message-content {
+  font-family: 'Lora', Georgia, ui-serif, serif;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+[data-style="claude"] .chat-message-content h1,
+[data-style="claude"] .chat-message-content h2,
+[data-style="claude"] .chat-message-content h3 {
+  font-family: 'Poppins', ui-sans-serif, sans-serif;
+}
+
+/* Claude 风格代码块 */
+[data-style="claude"] .markdown-body pre {
+  border-radius: 10px;
+  background: rgba(20, 18, 15, 0.8);
+  border: 1px solid rgba(217, 119, 87, 0.06);
+}
+
+[data-style="claude"] .markdown-body code:not(.hljs) {
+  border-radius: 5px;
+  background: rgba(217, 119, 87, 0.08);
+  color: #e08d6f;
+}
+
+/* Claude 风格：链接为橙色 */
+[data-style="claude"] a {
+  color: #d97757;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+/* Claude 风格滚动条 */
+[data-style="claude"] ::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+[data-style="claude"] ::-webkit-scrollbar-thumb {
+  background: rgba(217, 119, 87, 0.18);
+  border-radius: 3px;
+}
+
+[data-style="claude"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(217, 119, 87, 0.35);
+}
+
+/* Claude 风格九宫格分割线颜色（暗色） */
+[data-style="claude"][data-theme="dark"] [data-grid-divider] {
+  background-color: #14130f !important;
+}
+
+/* Claude 风格暗色模式下侧边栏更深的背景 */
+[data-style="claude"][data-theme="dark"] .bg-bg-secondary {
+  background-color: #14130f;
+}

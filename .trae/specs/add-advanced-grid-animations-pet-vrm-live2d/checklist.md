@@ -1,0 +1,36 @@
+# Checklist
+
+- [x] `petStore.ts` 中的 `PetCharacter` 已扩展 `roleCard`、`avatarType`、`modelPath`、`subtitleEnabled`、`subtitleStyle`、`animations`、`expressions` 字段，且旧配置通过迁移函数兼容。
+- [x] `gridStore.ts` 已支持核心面板唯一性约束与添加/移除/换位操作。
+- [x] 点击左侧边栏「九宫格」按钮可触发全屏覆盖层式的进入/退出动画，时长 450ms，含 scale/opacity/blur/stagger 效果。
+- [x] 再次点击「九宫格」按钮或按 Esc 可退出九宫格模式。
+- [x] 中下方 `ChatPanel` 以缩小预览形式展示主对话流，仍可发送消息。
+- [x] `ChatPanel` 支持对消息进行引用，引用内容同步到主对话输入框。
+- [x] `ChatPanel` 支持「回退到此处」功能，回退后消息列表与数据库状态一致。
+- [x] 中间右侧 `AIViewPanel` 实时显示当前 AI 工具调用、状态与结果预览。
+- [x] `AIViewPanel` 顶部显示阶段摘要（思考中/执行中/回复中）与已完成/总数计数。
+- [x] 正中间 `PetPanel` 默认背景跟随应用主题，且可自定义为纯色/渐变/图片。
+- [x] `PetPanel` 支持导入本地 VRM 模型并渲染，加载失败时显示错误提示。
+- [x] `PetPanel` 支持导入本地 Live2D 模型并渲染，加载失败时显示错误提示。
+- [x] 未导入模型时使用现有 SVG 宠物角色作为 fallback。
+- [x] 宠物独立对话消息以字幕形式显示在宠物头部上方，最多 2 行，带淡入淡出动画。
+- [x] 字幕可在设置中开启/关闭。
+- [x] 当主对话开始 Agent 回复或工具执行时，宠物 `currentTaskName` 正确更新，情绪切换为 `working`。
+- [x] 当 Agent 回复结束且无运行中工具时，宠物 `currentTaskName` 清空，情绪回到 `idle`。
+- [x] 在任务执行期间用户与宠物对话时，宠物回复包含当前任务名称并表达不耐烦，情绪为 `annoyed`。
+- [x] 宠物回复由 AI 根据对话内容生成对应的动作与表情，并映射到当前渲染器。
+- [x] 设置页存在「宠物与九宫格」分类，可编辑角色卡、人物形象、背景、字幕与布局。
+- [x] 设置页人物形象选择支持默认 SVG、VRM、Live2D 三种类型并调用文件选择器。
+- [x] 九宫格空槽位点击后弹出面板选择菜单，可放置对话/实时 AI 视图/宠物窗口。
+- [x] 点击面板标题栏「×」可将面板最小化（变为空槽位）。
+- [x] 拖拽面板标题栏到另一格子可完成换位，动画流畅。
+- [x] 九宫格动画仅使用 transform/opacity，目标帧率 ≥ 55fps。
+- [x] VRM/Live2D 渲染器在宠物面板不可见时暂停渲染循环。
+- [x] `npm run build` 与 `npm test` 均通过，无新增 TypeScript/ESLint/Vitest 错误。
+- [x] 九宫格覆盖整个应用全部界面（含标题栏/侧边栏/底栏），而非仅 main 区域。
+- [x] 退出九宫格后界面不卡死，所有元素可正常点击（修复 pointer-events 残留问题）。
+- [x] 阿芙洛狄忒 Live2D 模型已导入为默认（avatarType=live2d，路径已配置）。
+- [x] Live2D 模型通过 app-asset:// 协议 + cubism4 子路径正确加载。
+- [x] ChatPanel 无对话时自动创建对话，确保可发送消息。
+- [x] AIViewPanel 支持 VS Code 风格文件 diff（红色删除行、绿色增加行、行号、文件路径）。
+- [x] 九宫格 UI 已美化（毛玻璃工具栏、三维分层面板、渐变图标、精致空槽位）。

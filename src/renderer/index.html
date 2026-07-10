@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: file: app-asset:; font-src 'self'; connect-src 'self' app-asset:;" />
+    <title>ZX-Code</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <!-- Live2D Cubism 4 Core 运行时：必须在 pixi-live2d-display/cubism4 之前加载 -->
+    <script src="/live2dcubismcore.min.js"></script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

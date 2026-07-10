@@ -1,0 +1,49 @@
+# 依赖
+node_modules/
+
+# 构建产物
+out/
+dist/
+release/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 日志
+*.log
+logs/
+
+# 环境变量
+.env
+.env.local
+.env.*.local
+
+# 数据库
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# 临时/测试截图与视频帧
+video_frames/
+.tmp/
+*-screenshot.png
+test-screenshot.png
+grid-*.png
+verify-*.png
+demo_script.txt
+_fix_css.ps1
+generate_video*.py
+merge_video.py
+tmp_trace.mjs
+
+# TypeScript 构建缓存
+*.tsbuildinfo

@@ -1,0 +1,68 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "fense.moc3",
+		"Textures": [
+			"fense.8192/texture_00.png"
+		],
+		"Physics": "fense.physics3.json",
+		"DisplayInfo": "fense.cdi3.json",
+		"Expressions": [
+			{
+				"Name": "axy",
+				"File": "expression/axy.exp3.json"
+			},
+			{
+				"Name": "heilian",
+				"File": "expression/heilian.exp3.json"
+			},
+			{
+				"Name": "kuku",
+				"File": "expression/kuku.exp3.json"
+			},
+			{
+				"Name": "lianhong",
+				"File": "expression/lianhong.exp3.json"
+			},
+			{
+				"Name": "shengqi",
+				"File": "expression/shengqi.exp3.json"
+			}
+		],
+		"Motions": {
+			"": [
+				{
+					"File": "motions/jingya.motion3.json"
+				},
+				{
+					"File": "motions/kaixin.motion3.json"
+				},
+				{
+					"File": "motions/shengqi.motion3.json"
+				},
+				{
+					"File": "motions/shuijiao.motion3.json"
+				},
+				{
+					"File": "motions/wink.motion3.json"
+				},
+				{
+					"File": "motions/yaotou.motion3.json"
+				}
+			]
+		}
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": []
+		},
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": []
+		}
+	],
+	"HitAreas": []
+}
