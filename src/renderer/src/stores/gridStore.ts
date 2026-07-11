@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-export type PanelType = 'chat' | 'aiView' | 'pet' | 'browser' | 'clock' | 'weather' | 'heatmap' | 'extensions' | 'todo' | null
+export type PanelType = 'chat' | 'aiView' | 'pet' | 'browser' | 'clock' | 'weather' | 'heatmap' | 'extensions' | 'todo' | 'kanban' | null
 
 export interface GridLayout {
   // 9个格子的面板映射，位置索引 0-8 (从左到右，从上到下)
@@ -42,7 +42,7 @@ export const LAYOUT_PRESETS = {
 export type LayoutPresetKey = keyof typeof LAYOUT_PRESETS
 
 /** 需要保证全局唯一的面板（所有非 null 面板都必须唯一） */
-const UNIQUE_PANELS: PanelType[] = ['chat', 'aiView', 'pet', 'browser', 'clock', 'weather', 'heatmap', 'extensions', 'todo']
+const UNIQUE_PANELS: PanelType[] = ['chat', 'aiView', 'pet', 'browser', 'clock', 'weather', 'heatmap', 'extensions', 'todo', 'kanban']
 
 interface GridStore {
   isGridMode: boolean
@@ -110,7 +110,7 @@ export function sanitizeSizes(sizes: unknown): number[] {
  * 这防止了持久化存储中可能出现的异常长度导致网格渲染多余格子。
  */
 export function sanitizeSlots(slots: unknown): PanelType[] {
-  const VALID_PANELS = new Set<PanelType>(['chat', 'aiView', 'pet', 'browser', 'clock', 'weather', 'heatmap', 'extensions', 'todo', null])
+  const VALID_PANELS = new Set<PanelType>(['chat', 'aiView', 'pet', 'browser', 'clock', 'weather', 'heatmap', 'extensions', 'todo', 'kanban', null])
   if (!Array.isArray(slots)) {
     return [...DEFAULT_LAYOUT.slots]
   }

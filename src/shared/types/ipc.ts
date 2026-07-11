@@ -10,6 +10,24 @@ import type { UsageStatsApi } from './usage'
 import type { WeatherApi } from './weather'
 import type { FileSearchResult, SearchOptions } from './search'
 import type { TerminalApi } from './terminal'
+import type { ContextBriefing } from './supercontext'
+import type {
+  MemoryNode,
+  CreateMemoryNodeDto,
+  UpdateMemoryNodeDto,
+  RecallQuery,
+  RecallResultItem,
+  ObsidianExportOptions,
+  ObsidianExportResult,
+  MemoryPartition,
+} from './memory'
+import type { Goal, Task, KanbanStatus, CreateGoalDto, CreateTaskDto } from './goal'
+import type {
+  SyncSource,
+  CreateSyncSourceDto,
+  UpdateSyncSourceDto,
+  FullSyncResult,
+} from './sync'
 
 export interface ProjectApi {
   list: () => Promise<Project[]>
@@ -326,6 +344,120 @@ export interface SearchApi {
   files: (options: SearchOptions) => Promise<FileSearchResult[]>
 }
 
+/** TTS 合成响应 */
+export interface TtsSynthesizeResponse {
+  ok: boolean
+  /** 音频临时文件路径（主进程写入临时文件，前端用 file:// 播放） */
+  filePath?: string
+  format?: 'mp3' | 'wav'
+  error?: string
+}
+
+/** TTS 音色列表响应 */
+export interface TtsVoicesResponse {
+  ok: boolean
+  voices?: import('./tts').TtsVoice[]
+  error?: string
+}
+
+/** TTS 设置响应 */
+export interface TtsSettingsResponse {
+  ok: boolean
+  settings?: import('./tts').TtsSettings
+  error?: string
+}
+
+/** TTS 选择音频文件响应 */
+export interface TtsSelectAudioResponse {
+  ok: boolean
+  filePath?: string
+  canceled?: boolean
+}
+
+/** TTS 语音克隆响应 */
+export interface TtsCloneVoiceResponse {
+  ok: boolean
+  voiceId?: string
+  error?: string
+}
+
+/** TTS（文本转语音）API */
+export interface TtsApi {
+  /** 合成语音，返回音频临时文件路径 */
+  synthesize: (text: string, options?: {
+    voice?: string
+    rate?: number
+    volume?: number
+    format?: 'mp3' | 'wav'
+    cloneVoiceId?: string
+  }) => Promise<TtsSynthesizeResponse>
+  /** 清理临时音频文件 */
+  cleanupAudio: (filePath: string) => Promise<{ ok: boolean }>
+  /** 获取当前 provider 的可用音色列表 */
+  listVoices: () => Promise<TtsVoicesResponse>
+  /** 获取当前 TTS 设置 */
+  getSettings: () => Promise<TtsSettingsResponse>
+  /** 选择音频文件（用于语音克隆） */
+  selectAudio: () => Promise<TtsSelectAudioResponse>
+  /** 语音克隆：上传音频 + 参考文本，创建克隆音色 */
+  cloneVoice: (audioPath: string, referenceText: string) => Promise<TtsCloneVoiceResponse>
+}
+
+/** 目标与看板任务 API */
+export interface GoalApi {
+  listGoals: (type?: 'long_term' | 'session') => Promise<Goal[]>
+  getGoal: (id: string) => Promise<Goal | null>
+  createGoal: (dto: CreateGoalDto) => Promise<Goal>
+  updateGoalStatus: (id: string, status: 'active' | 'completed' | 'archived') => Promise<Goal>
+  deleteGoal: (id: string) => Promise<void>
+  listTasks: (goalId: string, status?: KanbanStatus) => Promise<Task[]>
+  createTask: (dto: CreateTaskDto) => Promise<Task>
+  updateTaskStatus: (id: string, status: KanbanStatus) => Promise<Task>
+  updateTask: (id: string, updates: { title?: string; description?: string; status?: KanbanStatus }) => Promise<Task>
+  deleteTask: (id: string) => Promise<void>
+}
+
+/** 记忆节点统计 */
+export interface MemoryStats {
+  total: number
+  byPartition: Record<string, number>
+}
+
+/** 记忆检索与导出 API */
+export interface MemoryApi {
+  list: (partition?: MemoryPartition) => Promise<MemoryNode[]>
+  search: (query: RecallQuery) => Promise<RecallResultItem[]>
+  get: (id: string) => Promise<MemoryNode | null>
+  create: (dto: CreateMemoryNodeDto) => Promise<MemoryNode>
+  update: (id: string, dto: UpdateMemoryNodeDto) => Promise<MemoryNode>
+  delete: (id: string) => Promise<void>
+  stats: () => Promise<MemoryStats>
+  exportObsidian: (options: ObsidianExportOptions) => Promise<ObsidianExportResult>
+}
+
+export interface SuperContextApi {
+  /** 构建上下文简报（相关文件 / 记忆 / 历史对话） */
+  build: (workspacePath: string, userMessage: string, timeoutMs?: number) => Promise<ContextBriefing>
+  /** 格式化简报为可注入的文本 */
+  format: (briefing: ContextBriefing) => Promise<string>
+}
+
+/** 调度器运行状态 */
+export interface SchedulerStatus {
+  running: boolean
+  jobs: string[]
+}
+
+/** 外部数据源同步 API */
+export interface SyncApi {
+  listSources: () => Promise<SyncSource[]>
+  addSource: (dto: CreateSyncSourceDto) => Promise<SyncSource>
+  updateSource: (id: string, dto: UpdateSyncSourceDto) => Promise<SyncSource>
+  removeSource: (id: string) => Promise<void>
+  triggerNow: () => Promise<FullSyncResult>
+  getSchedulerStatus: () => Promise<SchedulerStatus>
+}
+
 export interface Chat2ApiApi {
   listAccounts(providerId?: string): Promise<any[]>
   deleteAccount(accountId: string): Promise<boolean>
@@ -364,6 +496,16 @@ export interface IpcApi {
   weather: WeatherApi
   search: SearchApi
   terminal: TerminalApi
+  /** TTS（文本转语音） */
+  tts: TtsApi
+  /** 目标与看板任务 */
+  goal: GoalApi
+  /** 记忆检索与导出 */
+  memory: MemoryApi
+  /** SuperContext 上下文预热 */
+  supercontext: SuperContextApi
+  /** 外部数据源同步 */
+  sync: SyncApi
   /** 终端事件监听（输出 / 退出） */
   onTerminalOutput: (callback: (payload: { id: string; data: string }) => void) => () => void
   onTerminalExit: (callback: (payload: { id: string; code: number | null }) => void) => () => void

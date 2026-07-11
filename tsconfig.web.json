@@ -20,7 +20,8 @@
   "include": [
     "src/renderer/src/**/*",
     "src/renderer/src/**/*.tsx",
-    "src/shared/**/*"
+    "src/shared/**/*",
+    "src/main/utils/permission-risk.ts"
   ],
   "exclude": [
     "src/renderer/src/__tests__/**"

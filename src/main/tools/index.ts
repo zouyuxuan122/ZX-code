@@ -3,6 +3,8 @@ import { toolRegistry } from './registry'
 import { logger } from '../services/logger.service'
 import { getMcpTools } from '../services/mcp.service'
 import { syncMcpToolExecutors } from './registry'
+import { getDb } from '../database'
+import { GoalService } from '../services/goal.service'
 import { readFileTool } from './builtin/read_file.tool'
 import { writeFileTool } from './builtin/write_file.tool'
 import { editTool } from './builtin/edit.tool'
@@ -16,8 +18,9 @@ import { taskTool } from './builtin/task.tool'
 import { webfetchTool } from './builtin/webfetch.tool'
 import { websearchTool } from './builtin/websearch.tool'
 import { terminalReadTool } from './builtin/terminal_read.tool'
+import { createGoalTool } from './builtin/goal.tool'
 
-/** 所有内置工具列表 */
+/** 静态内置工具列表（无需依赖注入的工具） */
 const builtinTools: BuiltinTool[] = [
   readFileTool,
   writeFileTool,
@@ -37,14 +40,17 @@ let registered = false
 
 /**
  * 注册所有内置工具，幂等
+ * goal_manage 工具需要 GoalService 依赖注入，在注册时构造（确保 DB 已初始化）
  */
 export function registerBuiltinTools(): void {
   if (registered) return
   for (const tool of builtinTools) {
     toolRegistry.registerTool(tool)
   }
+  const goalTool = createGoalTool(new GoalService(getDb()))
+  toolRegistry.registerTool(goalTool)
   registered = true
-  logger.info(`已注册 ${builtinTools.length} 个内置工具`)
+  logger.info(`已注册 ${builtinTools.length + 1} 个内置工具`)
 }
 
 /**

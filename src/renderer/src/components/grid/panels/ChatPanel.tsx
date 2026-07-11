@@ -2,7 +2,10 @@ import { useEffect, useRef, useMemo, useState, useCallback } from 'react'
 import { Send, Square, Maximize2, Plus } from 'lucide-react'
 import { useGridChatStore } from '@/stores/gridChatStore'
 import { useGridStore } from '@/stores/gridStore'
+import { useSettingsStore } from '@/stores/settingsStore'
 import { ModelSelector } from '@/components/chat/ModelSelector'
+import { TtsButton } from '@/components/chat/TtsButton'
+import { useTtsAutoPlay } from '@/hooks/useTtsAutoPlay'
 import type { Message } from '@shared/types/conversation'
 import { cn } from '@/utils/cn'
 
@@ -18,7 +21,7 @@ function MessageBubble({ message, isStreaming, streamingContent }: {
   if (!isStreaming && !content.trim()) return null
 
   return (
-    <div className={cn('flex w-full', isUser ? 'justify-end' : 'justify-start')}>
+    <div className={cn('flex w-full flex-col gap-0.5', isUser ? 'items-end' : 'items-start')}>
       <div
         className={cn(
           'max-w-[85%] rounded-2xl px-3 py-1.5 text-[12px] leading-relaxed break-words',
@@ -29,6 +32,10 @@ function MessageBubble({ message, isStreaming, streamingContent }: {
       >
         {content || '…'}
       </div>
+      {/* AI 消息语音按钮（非流式时显示） */}
+      {!isUser && !isStreaming && content.trim() && (
+        <TtsButton messageId={message.id} text={content} size="sm" />
+      )}
     </div>
   )
 }
@@ -111,6 +118,17 @@ function MiniChatInput({ input, setInput }: { input: string; setInput: (v: strin
   const sendMessage = useGridChatStore((s) => s.sendMessage)
   const isStreaming = useGridChatStore((s) => s.isStreaming)
   const stopStreaming = useGridChatStore((s) => s.stopStreaming)
+  const messages = useGridChatStore((s) => s.messages)
+
+  // 最后一条 AI 助手消息（用于语音朗读按钮）
+  const lastAssistantMsg = useMemo(() => {
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].role === 'assistant' && messages[i].content.trim()) {
+        return messages[i]
+      }
+    }
+    return null
+  }, [messages])
 
   const handleSend = useCallback(async () => {
     const text = input.trim()
@@ -146,6 +164,14 @@ function MiniChatInput({ input, setInput }: { input: string; setInput: (v: strin
           'disabled:opacity-40',
         )}
       />
+      {/* 语音朗读按钮 — 朗读最后一条 AI 回复 */}
+      {lastAssistantMsg && !isStreaming && (
+        <TtsButton
+          messageId={lastAssistantMsg.id}
+          text={lastAssistantMsg.content}
+          size="sm"
+        />
+      )}
       {isStreaming ? (
         <button
           type="button"
@@ -182,8 +208,15 @@ export function ChatPanel() {
   const error = useGridChatStore((s) => s.error)
   const clearError = useGridChatStore((s) => s.clearError)
   const reset = useGridChatStore((s) => s.reset)
+  const messages = useGridChatStore((s) => s.messages)
+  const isStreaming = useGridChatStore((s) => s.isStreaming)
   const setGridMode = useGridStore((s) => s.setGridMode)
+  const ttsEnabled = useSettingsStore((s) => s.getSetting<boolean>('tts.enabled', false))
+  const ttsMode = useSettingsStore((s) => s.getSetting<'auto' | 'manual'>('tts.mode', 'manual'))
   const [input, setInput] = useState('')
+
+  // TTS 自动朗读：流式结束后自动播放最后一条 AI 消息
+  useTtsAutoPlay({ isStreaming, messages, ttsEnabled, ttsMode })
 
   const handleExitGrid = useCallback(() => {
     setGridMode(false)

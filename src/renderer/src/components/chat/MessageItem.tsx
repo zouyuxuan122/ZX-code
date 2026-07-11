@@ -7,6 +7,7 @@ import { useChatStore } from '@/stores/chatStore'
 import { useSettingsStore } from '@/stores/settingsStore'
 import { MarkdownRenderer } from './MarkdownRenderer'
 import { ToolCallView } from './ToolCallView'
+import { TtsButton } from './TtsButton'
 import { cn } from '@/utils/cn'
 
 interface MessageItemProps {
@@ -355,6 +356,7 @@ export const MessageItem = memo(function MessageItem({
                   引用
                 </button>
               )}
+              <TtsButton messageId={message.id} text={content} size="sm" />
               <button
                 type="button"
                 onClick={() => handleCopy(content)}

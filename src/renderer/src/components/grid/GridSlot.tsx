@@ -10,6 +10,7 @@ import { WeatherPanel } from './panels/WeatherPanel'
 import { UsageHeatmapPanel } from './panels/UsageHeatmapPanel'
 import { ExtensionsPanel } from './panels/ExtensionsPanel'
 import { TodoPanel } from './panels/TodoPanel'
+import { KanbanPanel } from './panels/KanbanPanel'
 import { GridPanelPlaceholder } from './GridPanelPlaceholder'
 import { cn } from '@/utils/cn'
 
@@ -95,6 +96,7 @@ const PANEL_COMPONENTS: Record<string, React.ComponentType> = {
   heatmap: UsageHeatmapPanel,
   extensions: ExtensionsPanel,
   todo: TodoPanel,
+  kanban: KanbanPanel,
 }
 
 /** 单个网格槽位：无标题栏，平面风格 */

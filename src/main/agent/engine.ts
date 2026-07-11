@@ -2,10 +2,177 @@ import { chatWithProvider } from '../providers'
 import { toolRegistry } from '../tools/registry'
 import { logger } from '../services/logger.service'
 import { checkPermissionWithPath, getAllowedDirectories } from '../services/permission.service'
+import { compressToolOutput } from '../services/token-juice.service'
+import type { TokenJuiceConfig } from '../services/token-juice.service'
+import { SuperContextService } from '../services/super-context.service'
+import { MemoryRecallService } from '../services/memory-recall.service'
+import { MemoryExtractService } from '../services/memory-extract.service'
+import { getDb } from '../database'
+import * as settingsRepo from '../database/repositories/settings.repo'
 import type { ChatParams, ChatChunk } from '@shared/types/model'
 import type { ChatMessage, ToolCall } from '@shared/types/conversation'
 import type { ToolExecutionResult, ToolContext, SubAgentParams, SubAgentResult, ToolDefinition } from '@shared/types/tool'
+import type { RecallResultItem } from '@shared/types/memory'
 import type { AgentEvent, AgentRunParams, AgentUsage } from './types'
+import { buildMemoryRecallSection, createMemoryExtractor, extractKeywords } from './engine.memory'
+
+/**
+ * 读取 TokenJuice 压缩配置(settings 表 category=model)
+ * 失败或未设置时回退到默认值:enabled=true, maxToolOutputChars=8000
+ */
+function getTokenJuiceConfig(): TokenJuiceConfig {
+  try {
+    const enabled = settingsRepo.get('tokenJuice.enabled')
+    const maxToolOutputChars = settingsRepo.get('tokenJuice.maxToolOutputChars')
+    return {
+      enabled: typeof enabled === 'boolean' ? enabled : true,
+      maxToolOutputChars: typeof maxToolOutputChars === 'number' ? maxToolOutputChars : 8000,
+    }
+  } catch {
+    return { enabled: true, maxToolOutputChars: 8000 }
+  }
+}
+
+/**
+ * 压缩工具输出内容(注入到模型上下文前调用)
+ */
+function compressForContext(content: string): string {
+  return compressToolOutput(content, getTokenJuiceConfig()).output
+}
+
+/**
+ * 读取 SuperContext 上下文预热配置(settings 表 category=memory)
+ * 失败或未设置时回退到默认值:enabled=true, timeoutMs=800
+ */
+function getSuperContextConfig(): { enabled: boolean; timeoutMs: number } {
+  try {
+    const enabled = settingsRepo.get('superContext.enabled')
+    const timeoutMs = settingsRepo.get('superContext.timeoutMs')
+    return {
+      enabled: typeof enabled === 'boolean' ? enabled : true,
+      timeoutMs: typeof timeoutMs === 'number' ? timeoutMs : 800,
+    }
+  } catch {
+    return { enabled: true, timeoutMs: 800 }
+  }
+}
+
+/**
+ * 构建 SuperContext 上下文简报文本(用于注入 system message)
+ * 失败或未开启时返回空字符串，不阻塞对话流程
+ */
+async function buildSuperContextBriefingText(
+  workspacePath: string,
+  userMessage: string,
+): Promise<string> {
+  const config = getSuperContextConfig()
+  if (!config.enabled || !workspacePath || !userMessage) return ''
+  try {
+    const db = getDb()
+    const recallService = new MemoryRecallService(db)
+    const contextService = new SuperContextService(recallService, db)
+    const briefing = await contextService.buildBriefing(workspacePath, userMessage, config.timeoutMs)
+    return contextService.formatBriefingAsText(briefing)
+  } catch (err) {
+    logger.warn(`SuperContext 简报构建失败: ${(err as Error).message}`)
+    return ''
+  }
+}
+
+/**
+ * 读取记忆注入配置(settings 表 category=memory)
+ * 失败或未设置时回退到默认值
+ */
+function getMemoryConfig(): { enabled: boolean; autoRecall: boolean; autoExtract: boolean; recallLimit: number } {
+  try {
+    const enabled = settingsRepo.get('memory.enabled')
+    const autoRecall = settingsRepo.get('memory.autoRecall')
+    const autoExtract = settingsRepo.get('memory.autoExtract')
+    const recallLimit = settingsRepo.get('memory.recallLimit')
+    return {
+      enabled: typeof enabled === 'boolean' ? enabled : true,
+      autoRecall: typeof autoRecall === 'boolean' ? autoRecall : true,
+      autoExtract: typeof autoExtract === 'boolean' ? autoExtract : true,
+      recallLimit: typeof recallLimit === 'number' ? recallLimit : 5,
+    }
+  } catch {
+    return { enabled: true, autoRecall: true, autoExtract: true, recallLimit: 5 }
+  }
+}
+
+/**
+ * 构建记忆检索 section(用于注入 system message)
+ * 从用户消息提取关键词检索 Top-N 记忆,失败时返回空字符串不阻塞对话
+ */
+function buildMemoryRecallText(userMessage: string): string {
+  const config = getMemoryConfig()
+  if (!config.enabled || !config.autoRecall || !userMessage) return ''
+  try {
+    const db = getDb()
+    const recallService = new MemoryRecallService(db)
+    const keywords = extractKeywords(userMessage)
+    const allResults: RecallResultItem[] = []
+    for (const kw of keywords) {
+      if (allResults.length >= config.recallLimit) break
+      const results = recallService.queryNodes({ keyword: kw, limit: config.recallLimit })
+      for (const r of results) {
+        if (allResults.length >= config.recallLimit) break
+        if (!allResults.find(i => i.node.id === r.node.id)) {
+          allResults.push(r)
+        }
+      }
+    }
+    return buildMemoryRecallSection(allResults)
+  } catch (err) {
+    logger.warn(`记忆检索失败: ${(err as Error).message}`)
+    return ''
+  }
+}
+
+/**
+ * 对话结束后异步触发记忆抽取(fire-and-forget,不阻塞对话完成)
+ * 失败时静默处理,不影响主流程
+ */
+function triggerMemoryExtraction(
+  providerId: string,
+  model: string,
+  messages: ChatMessage[],
+): void {
+  try {
+    const config = getMemoryConfig()
+    if (!config.enabled || !config.autoExtract) return
+    if (messages.length === 0) return
+
+    const db = getDb()
+    const recallService = new MemoryRecallService(db)
+    const extractor = createMemoryExtractor(async (params) => {
+      const chatParams: ChatParams = {
+        model,
+        messages: [
+          ...(params.systemPrompt ? [{ role: 'system' as const, content: params.systemPrompt }] : []),
+          { role: 'user' as const, content: params.content || '抽取记忆' },
+        ],
+        stream: true,
+      }
+      let fullContent = ''
+      for await (const chunk of chatWithProvider(providerId, chatParams) as AsyncGenerator<ChatChunk>) {
+        if (chunk.content) fullContent += chunk.content
+      }
+      return { content: fullContent }
+    })
+    const extractService = new MemoryExtractService(recallService, extractor)
+    // 转换 ChatMessage[] 为简化消息列表(只保留 role/content)
+    const messagesForExtract = messages
+      .filter(m => m.content !== null)
+      .map(m => ({ role: m.role, content: m.content || '' })) as unknown as Parameters<MemoryExtractService['extractFromConversation']>[0]
+    // 异步执行,不等待(fire-and-forget)
+    extractService.extractFromConversation(messagesForExtract).catch((err: unknown) => {
+      logger.warn(`记忆抽取失败: ${(err as Error).message}`)
+    })
+  } catch (err) {
+    logger.warn(`记忆抽取触发失败: ${(err as Error).message}`)
+  }
+}
 
 /**
  * Agent 引擎
@@ -41,6 +208,44 @@ export class AgentEngine {
 
     // 工作副本，循环中会持续追加
     const workingMessages: ChatMessage[] = messages.map(m => ({ ...m }))
+
+    // SuperContext 上下文预热：在调用 LLM 前，将简报追加到 system message
+    // 失败或超时降级为空文本，不阻塞对话
+    const workspacePath = context?.workspacePath || ''
+    const lastUserMessage = [...messages].reverse().find(m => m.role === 'user')?.content || ''
+    if (workspacePath && lastUserMessage) {
+      const briefingText = await buildSuperContextBriefingText(workspacePath, lastUserMessage)
+      if (briefingText) {
+        const systemIdx = workingMessages.findIndex(m => m.role === 'system')
+        if (systemIdx >= 0) {
+          workingMessages[systemIdx] = {
+            ...workingMessages[systemIdx],
+            content: `${workingMessages[systemIdx].content}\n\n# 上下文简报\n${briefingText}`,
+          }
+        } else {
+          // 无 system 消息时，作为独立 system 消息插入到最前面
+          workingMessages.unshift({ role: 'system', content: `# 上下文简报\n${briefingText}` })
+        }
+      }
+    }
+
+    // 记忆检索注入：在调用 LLM 前，将相关记忆(Top-5)追加到 system message
+    // 失败时降级为空文本，不阻塞对话
+    if (lastUserMessage) {
+      const memorySection = buildMemoryRecallText(lastUserMessage)
+      if (memorySection) {
+        const systemIdx = workingMessages.findIndex(m => m.role === 'system')
+        if (systemIdx >= 0) {
+          workingMessages[systemIdx] = {
+            ...workingMessages[systemIdx],
+            content: `${workingMessages[systemIdx].content}\n\n${memorySection}`,
+          }
+        } else {
+          workingMessages.unshift({ role: 'system', content: memorySection })
+        }
+      }
+    }
+
     let lastUsage: AgentUsage | undefined
     let lastFinishReason: 'stop' | 'length' | 'tool_calls' | null = null
 
@@ -216,6 +421,9 @@ export class AgentEngine {
       logger.error(`Agent 运行异常 [conv=${conversationId}]: ${message}`, err as Error)
       yield { type: 'error', message }
       yield { type: 'finish', reason: 'error', usage: lastUsage }
+    } finally {
+      // 对话结束后异步抽取记忆(fire-and-forget,不阻塞对话完成回调)
+      triggerMemoryExtraction(providerId, model, workingMessages)
     }
   }
 
@@ -366,10 +574,10 @@ export class AgentEngine {
         logger.error(`工具 ${call.name} 执行异常 [conv=${conversationId}]: ${(err as Error).message}`, err as Error)
       }
 
-      // 回填 'tool' 角色消息
+      // 回填 'tool' 角色消息(注入前压缩,节省 token)
       workingMessages.push({
         role: 'tool',
-        content: result.content,
+        content: compressForContext(result.content),
         tool_call_id: call.id,
         name: call.name,
       })
@@ -528,6 +736,8 @@ export class AgentEngine {
             allowedDirectories: getAllowedDirectories(),
           }
 
+          let result: ToolExecutionResult
+
           // 权限检查：子智能体不能访问工作区和白名单外的路径
           // 如果用户之前通过"始终允许"批准了某个目录，则该目录也在白名单中，子智能体可以访问
           const subTargetPath = (parsedArgs.path as string) || (parsedArgs.file_path as string) || (parsedArgs.cwd as string) || undefined
@@ -549,7 +759,6 @@ export class AgentEngine {
             }
           }
 
-          let result: ToolExecutionResult
           try {
             result = await tool.execute(parsedArgs, toolContext)
           } catch (err) {
@@ -562,7 +771,7 @@ export class AgentEngine {
 
           subMessages.push({
             role: 'tool',
-            content: result.content,
+            content: compressForContext(result.content),
             tool_call_id: call.id,
             name: call.name,
           })

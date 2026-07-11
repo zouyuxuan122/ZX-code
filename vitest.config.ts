@@ -8,7 +8,13 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/renderer/src/__tests__/setup.ts'],
-    include: ['src/renderer/src/__tests__/**/*.test.{ts,tsx}'],
+    include: [
+      'src/renderer/src/__tests__/**/*.test.{ts,tsx}',
+      'src/main/services/__tests__/**/*.test.{ts,tsx}',
+      'src/main/tools/builtin/__tests__/**/*.test.{ts,tsx}',
+      'src/main/ipc/__tests__/**/*.test.{ts,tsx}',
+      'src/main/agent/__tests__/**/*.test.{ts,tsx}',
+    ],
     css: false,
   },
   resolve: {

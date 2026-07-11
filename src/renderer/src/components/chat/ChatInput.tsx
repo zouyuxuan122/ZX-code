@@ -19,6 +19,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ModelSelector, parseModelName } from './ModelSelector'
 import { ThinkingLevelSelector } from './ThinkingLevelSelector'
 import { QuestionCard } from './QuestionCard'
+import { TtsButton } from './TtsButton'
 import { Tooltip } from '@/components/ui/Tooltip'
 import { useUIStore } from '@/stores/uiStore'
 import { useChatStore } from '@/stores/chatStore'
@@ -367,6 +368,16 @@ export function ChatInput() {
 
   const canSend = (input.trim().length > 0 || attachments.length > 0 || quotedText.length > 0) && !sending && !isStreaming
 
+  // 最后一条 AI 助手消息（用于语音朗读按钮）
+  const lastAssistantMsg = useMemo(() => {
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].role === 'assistant' && messages[i].content.trim()) {
+        return messages[i]
+      }
+    }
+    return null
+  }, [messages])
+
   return (
     <div className="border-t border-border-subtle p-3 transition-smooth">
       <AnimatePresence>
@@ -542,6 +553,14 @@ export function ChatInput() {
         <div className="flex items-center gap-2 border-t border-border-subtle px-2 py-1.5">
           <ModelSelector />
           <ThinkingLevelSelector />
+          {lastAssistantMsg && (
+            <TtsButton
+              messageId={lastAssistantMsg.id}
+              text={lastAssistantMsg.content}
+              size="sm"
+              disabled={isStreaming}
+            />
+          )}
 
           <div className="ml-auto flex items-center gap-2">
             <AnimatePresence>

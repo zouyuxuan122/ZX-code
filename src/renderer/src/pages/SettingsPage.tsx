@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   ArrowLeft, Settings, Cpu, Key, Shield, Palette,
-  FileText, FolderGit2, Plug, Globe, LayoutGrid
+  FileText, FolderGit2, Plug, Globe, LayoutGrid, Volume2, Brain, RefreshCw
 } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Button } from '@/components/ui/Button'
 import { ProviderSettings } from '@/components/settings/ProviderSettings'
+import { TokenJuiceSettings } from '@/components/settings/TokenJuiceSettings'
 import { GeneralSettings } from '@/components/settings/GeneralSettings'
 import { ApiSettings } from '@/components/settings/ApiSettings'
 import { PermissionSettings } from '@/components/settings/PermissionSettings'
@@ -16,6 +17,9 @@ import { WorkspaceAppearanceSettings } from '@/components/settings/WorkspaceAppe
 import { McpSettings } from '@/components/settings/McpSettings'
 import { WebChatSettings } from '@/components/settings/WebChatSettings'
 import { PetSettings } from '@/components/settings/PetSettings'
+import { TtsSettings } from '@/components/settings/TtsSettings'
+import { MemorySettings } from '@/components/settings/MemorySettings'
+import { SyncSettings } from '@/components/settings/SyncSettings'
 import { cn } from '@/utils/cn'
 
 const settingTabs = [
@@ -28,6 +32,9 @@ const settingTabs = [
   { id: 'theme', label: '外观', icon: Palette, desc: '主题、字体、快捷键' },
   { id: 'workspace', label: '工作区外观', icon: FolderGit2, desc: '头像、对话背景' },
   { id: 'pet', label: '宠物与九宫格', icon: LayoutGrid, desc: '角色卡、模型、背景、字幕、布局' },
+  { id: 'tts', label: '语音合成', icon: Volume2, desc: 'TTS 引擎、音色、声音克隆' },
+  { id: 'memory', label: '记忆', icon: Brain, desc: '记忆检索、编辑、导出' },
+  { id: 'sync', label: '自动同步', icon: RefreshCw, desc: '外部数据源拉取、调度器' },
   { id: 'log', label: '日志', icon: FileText, desc: '日志级别、错误报告' },
 ]
 
@@ -105,7 +112,16 @@ export default function SettingsPage() {
               )}
             >
               {activeTab === 'model' ? (
-                <ProviderSettings />
+                <div className="space-y-6">
+                  <ProviderSettings />
+                  <div>
+                    <h2 className="mb-1 text-lg font-semibold text-text-primary">工具输出压缩</h2>
+                    <p className="mb-4 text-sm text-text-secondary">
+                      压缩工具调用结果以节省上下文 token。
+                    </p>
+                    <TokenJuiceSettings />
+                  </div>
+                </div>
               ) : activeTab === 'webchat' ? (
                 <WebChatSettings />
               ) : (
@@ -124,6 +140,9 @@ export default function SettingsPage() {
                   {activeTab === 'theme' && <ThemeSettings />}
                   {activeTab === 'workspace' && <WorkspaceAppearanceSettings />}
                   {activeTab === 'pet' && <PetSettings />}
+                  {activeTab === 'tts' && <TtsSettings />}
+                  {activeTab === 'memory' && <MemorySettings />}
+                  {activeTab === 'sync' && <SyncSettings />}
                   {activeTab === 'log' && <LogSettings />}
                 </>
               )}

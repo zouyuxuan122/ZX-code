@@ -6,9 +6,10 @@ interface ToggleProps {
   onChange: (checked: boolean) => void
   disabled?: boolean
   size?: 'sm' | 'md'
+  'aria-label'?: string
 }
 
-export function Toggle({ checked, onChange, disabled, size = 'md' }: ToggleProps) {
+export function Toggle({ checked, onChange, disabled, size = 'md', ...rest }: ToggleProps) {
   // md: w-10 h-5 knob h-4 w-4 translate 18
   // sm: w-8 h-4 knob h-3 w-3 translate 14
   const dims = size === 'sm'
@@ -22,6 +23,7 @@ export function Toggle({ checked, onChange, disabled, size = 'md' }: ToggleProps
       aria-checked={checked}
       disabled={disabled}
       onClick={() => !disabled && onChange(!checked)}
+      {...rest}
       className={cn(
         'relative inline-flex items-center rounded-full border transition-smooth-fast',
         dims.w, dims.h,

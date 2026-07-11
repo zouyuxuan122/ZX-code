@@ -9,8 +9,10 @@ import { SelectionToolbar } from '@/components/chat/SelectionToolbar'
 import { ChatContextMenu } from '@/components/chat/ChatContextMenu'
 import { TerminalPanel } from '@/components/terminal/TerminalPanel'
 import { useChatEvents, useProviderModelsSync } from '@/hooks/useChatEvents'
+import { useTtsAutoPlay } from '@/hooks/useTtsAutoPlay'
 import { useChatStore } from '@/stores/chatStore'
 import { useProjectStore } from '@/stores/projectStore'
+import { useSettingsStore } from '@/stores/settingsStore'
 import { useTerminalStore } from '@/stores/terminalStore'
 import { useUIStore } from '@/stores/uiStore'
 import { cn } from '@/utils/cn'
@@ -35,6 +37,13 @@ export default function ChatPage() {
   const terminalOpen = useTerminalStore((s) => s.isOpen)
   const setPendingInput = useUIStore((s) => s.setPendingInput)
   const conversations = useChatStore((s) => s.conversations)
+  const messages = useChatStore((s) => s.messages)
+  const isStreaming = useChatStore((s) => s.isStreaming)
+  const ttsEnabled = useSettingsStore((s) => s.getSetting<boolean>('tts.enabled', false))
+  const ttsMode = useSettingsStore((s) => s.getSetting<'auto' | 'manual'>('tts.mode', 'manual'))
+
+  // TTS 自动朗读：流式结束后自动播放最后一条 AI 消息
+  useTtsAutoPlay({ isStreaming, messages, ttsEnabled, ttsMode })
 
   useEffect(() => {
     void loadConversations(currentProject?.id)

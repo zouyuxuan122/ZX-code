@@ -287,4 +287,56 @@ export const api: IpcApi = {
     ipcRenderer.on('terminal:exit', handler)
     return () => ipcRenderer.removeListener('terminal:exit', handler)
   },
+  tts: {
+    synthesize: (text: string, options?: {
+      voice?: string
+      rate?: number
+      volume?: number
+      format?: 'mp3' | 'wav'
+      cloneVoiceId?: string
+    }) => ipcRenderer.invoke('tts:synthesize', text, options),
+    cleanupAudio: (filePath: string) => ipcRenderer.invoke('tts:cleanupAudio', filePath),
+    listVoices: () => ipcRenderer.invoke('tts:listVoices'),
+    getSettings: () => ipcRenderer.invoke('tts:getSettings'),
+    selectAudio: () => ipcRenderer.invoke('tts:selectAudio'),
+    cloneVoice: (audioPath: string, referenceText: string) =>
+      ipcRenderer.invoke('tts:cloneVoice', audioPath, referenceText),
+  },
+  goal: {
+    listGoals: (type?: 'long_term' | 'session') =>
+      ipcRenderer.invoke('goal:listGoals', type),
+    getGoal: (id: string) => ipcRenderer.invoke('goal:getGoal', id),
+    createGoal: (dto) => ipcRenderer.invoke('goal:createGoal', dto),
+    updateGoalStatus: (id: string, status: 'active' | 'completed' | 'archived') =>
+      ipcRenderer.invoke('goal:updateGoalStatus', id, status),
+    deleteGoal: (id: string) => ipcRenderer.invoke('goal:deleteGoal', id),
+    listTasks: (goalId: string, status?) => ipcRenderer.invoke('goal:listTasks', goalId, status),
+    createTask: (dto) => ipcRenderer.invoke('goal:createTask', dto),
+    updateTaskStatus: (id: string, status) => ipcRenderer.invoke('goal:updateTaskStatus', id, status),
+    updateTask: (id: string, updates) => ipcRenderer.invoke('goal:updateTask', id, updates),
+    deleteTask: (id: string) => ipcRenderer.invoke('goal:deleteTask', id),
+  },
+  memory: {
+    list: (partition?) => ipcRenderer.invoke('memory:list', partition),
+    search: (query) => ipcRenderer.invoke('memory:search', query),
+    get: (id: string) => ipcRenderer.invoke('memory:get', id),
+    create: (dto) => ipcRenderer.invoke('memory:create', dto),
+    update: (id: string, dto) => ipcRenderer.invoke('memory:update', id, dto),
+    delete: (id: string) => ipcRenderer.invoke('memory:delete', id),
+    stats: () => ipcRenderer.invoke('memory:stats'),
+    exportObsidian: (options) => ipcRenderer.invoke('memory:exportObsidian', options),
+  },
+  supercontext: {
+    build: (workspacePath: string, userMessage: string, timeoutMs?: number) =>
+      ipcRenderer.invoke('supercontext:build', workspacePath, userMessage, timeoutMs),
+    format: (briefing) => ipcRenderer.invoke('supercontext:format', briefing),
+  },
+  sync: {
+    listSources: () => ipcRenderer.invoke('sync:listSources'),
+    addSource: (dto) => ipcRenderer.invoke('sync:addSource', dto),
+    updateSource: (id, dto) => ipcRenderer.invoke('sync:updateSource', id, dto),
+    removeSource: (id) => ipcRenderer.invoke('sync:removeSource', id),
+    triggerNow: () => ipcRenderer.invoke('sync:triggerNow'),
+    getSchedulerStatus: () => ipcRenderer.invoke('sync:getSchedulerStatus'),
+  },
 }

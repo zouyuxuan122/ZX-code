@@ -1,6 +1,6 @@
 {
   "name": "zx-code",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "ZX-Code - Windows 桌面端编程 Agent 智能体应用",
   "main": "./out/main/index.js",
   "author": "zouyuxuan122",
@@ -51,6 +51,7 @@
     "tailwind-merge": "^2.5.2",
     "three": "^0.185.1",
     "turndown": "^7.2.4",
+    "ws": "^8.21.0",
     "zstd-codec": "^0.1.5",
     "zustand": "^5.0.0"
   },
@@ -66,6 +67,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@types/three": "^0.185.1",
+    "@types/ws": "^8.18.1",
     "@typescript-eslint/eslint-plugin": "^8.8.0",
     "@typescript-eslint/parser": "^8.8.0",
     "@vitejs/plugin-react": "^4.3.1",

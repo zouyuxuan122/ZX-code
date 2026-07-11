@@ -12,6 +12,9 @@ export type SettingCategory =
   | 'pet'
   | 'usage'
   | 'weather'
+  | 'tts'
+  | 'memory'
+  | 'sync'
 
 export interface Setting {
   key: string
@@ -51,4 +54,29 @@ export interface DefaultSettings {
   'workspace.sharedUserAvatar': string
   'workspace.sharedBackground': string
   'workspace.sharedBackgroundType': 'none' | 'color' | 'image'
+  // TTS 语音合成设置
+  'tts.enabled': boolean
+  'tts.provider': 'edge' | 'openai' | 'custom'
+  'tts.mode': 'auto' | 'manual'
+  'tts.voice': string
+  'tts.rate': number
+  'tts.volume': number
+  'tts.apiKey': string
+  'tts.baseUrl': string
+  'tts.cloneVoiceId': string
+  'tts.format': 'mp3' | 'wav'
+  // 记忆系统设置
+  'memory.enabled': boolean
+  'memory.autoExtract': boolean
+  'memory.autoRecall': boolean
+  'memory.recallLimit': number
+  // SuperContext 设置
+  'superContext.enabled': boolean
+  'superContext.timeoutMs': number
+  // TokenJuice 压缩设置
+  'tokenJuice.enabled': boolean
+  'tokenJuice.maxToolOutputChars': number
+  // 自动同步设置
+  'sync.enabled': boolean
+  'sync.intervalMinutes': number
 }

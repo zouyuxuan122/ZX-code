@@ -22,10 +22,13 @@ desktop.ini
 *.log
 logs/
 
-# 环境变量
-.env
-.env.local
-.env.*.local
+# 临时脚本与素材
+generate_apple_style_video.py
+merge_frames.py
+ref_frames/
+video_frames/
+video_frames_apple/
+*.mp4
 
 # 数据库
 *.db

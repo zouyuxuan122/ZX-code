@@ -129,6 +129,78 @@ const migrations: Migration[] = [
       }
     },
   },
+  {
+    name: '004_memory_goals_sync',
+    sql: `
+      CREATE TABLE IF NOT EXISTS memory_nodes (
+        id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+        parent_id TEXT,
+        partition TEXT NOT NULL,
+        title TEXT NOT NULL,
+        content TEXT NOT NULL,
+        tags TEXT DEFAULT '[]',
+        created_at INTEGER NOT NULL DEFAULT (unixepoch() * 1000),
+        updated_at INTEGER NOT NULL DEFAULT (unixepoch() * 1000),
+        FOREIGN KEY (parent_id) REFERENCES memory_nodes(id) ON DELETE CASCADE
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_memory_nodes_partition ON memory_nodes(partition);
+      CREATE INDEX IF NOT EXISTS idx_memory_nodes_parent ON memory_nodes(parent_id);
+      CREATE INDEX IF NOT EXISTS idx_memory_nodes_updated ON memory_nodes(updated_at);
+
+      CREATE TABLE IF NOT EXISTS goals (
+        id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+        type TEXT NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT DEFAULT '',
+        conversation_id TEXT,
+        project_id TEXT,
+        status TEXT NOT NULL DEFAULT 'active',
+        created_at INTEGER NOT NULL DEFAULT (unixepoch() * 1000),
+        updated_at INTEGER NOT NULL DEFAULT (unixepoch() * 1000),
+        FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE SET NULL,
+        FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE SET NULL
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_goals_project ON goals(project_id);
+      CREATE INDEX IF NOT EXISTS idx_goals_conversation ON goals(conversation_id);
+      CREATE INDEX IF NOT EXISTS idx_goals_status ON goals(status);
+
+      CREATE TABLE IF NOT EXISTS tasks (
+        id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+        goal_id TEXT NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT DEFAULT '',
+        status TEXT NOT NULL DEFAULT 'todo',
+        conversation_id TEXT,
+        order_index INTEGER NOT NULL DEFAULT 0,
+        created_at INTEGER NOT NULL DEFAULT (unixepoch() * 1000),
+        updated_at INTEGER NOT NULL DEFAULT (unixepoch() * 1000),
+        FOREIGN KEY (goal_id) REFERENCES goals(id) ON DELETE CASCADE,
+        FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE SET NULL
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_tasks_goal ON tasks(goal_id);
+      CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(status);
+      CREATE INDEX IF NOT EXISTS idx_tasks_conversation ON tasks(conversation_id);
+
+      CREATE TABLE IF NOT EXISTS sync_sources (
+        id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+        type TEXT NOT NULL,
+        name TEXT NOT NULL,
+        endpoint TEXT NOT NULL,
+        token TEXT DEFAULT '',
+        enabled INTEGER NOT NULL DEFAULT 1,
+        last_synced_at INTEGER,
+        last_sync_result TEXT,
+        created_at INTEGER NOT NULL DEFAULT (unixepoch() * 1000),
+        updated_at INTEGER NOT NULL DEFAULT (unixepoch() * 1000)
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_sync_sources_enabled ON sync_sources(enabled);
+      CREATE INDEX IF NOT EXISTS idx_sync_sources_type ON sync_sources(type);
+    `,
+  },
 ]
 
 export function runMigrations(db: Database.Database): void {
@@ -179,6 +251,27 @@ function insertDefaultSettings(db: Database.Database): void {
     'ui.sidebarCollapsed': { value: false, category: 'ui' },
     'ui.rightSidebarCollapsed': { value: false, category: 'ui' },
     'ui.terminalType': { value: 'powershell', category: 'ui' },
+    // TTS 语音合成默认设置
+    'tts.enabled': { value: false, category: 'tts' },
+    'tts.provider': { value: 'edge', category: 'tts' },
+    'tts.mode': { value: 'manual', category: 'tts' },
+    'tts.voice': { value: 'zh-CN-XiaoxiaoNeural', category: 'tts' },
+    'tts.rate': { value: 1, category: 'tts' },
+    'tts.volume': { value: 1, category: 'tts' },
+    'tts.apiKey': { value: '', category: 'tts' },
+    'tts.baseUrl': { value: '', category: 'tts' },
+    'tts.cloneVoiceId': { value: '', category: 'tts' },
+    'tts.format': { value: 'mp3', category: 'tts' },
+    'memory.enabled': { value: true, category: 'memory' },
+    'memory.autoExtract': { value: true, category: 'memory' },
+    'memory.autoRecall': { value: true, category: 'memory' },
+    'memory.recallLimit': { value: 5, category: 'memory' },
+    'superContext.enabled': { value: true, category: 'memory' },
+    'superContext.timeoutMs': { value: 800, category: 'memory' },
+    'tokenJuice.enabled': { value: true, category: 'model' },
+    'tokenJuice.maxToolOutputChars': { value: 8000, category: 'model' },
+    'sync.enabled': { value: false, category: 'sync' },
+    'sync.intervalMinutes': { value: 20, category: 'sync' },
   }
 
   const stmt = db.prepare(

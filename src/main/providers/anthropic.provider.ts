@@ -85,11 +85,12 @@ export class AnthropicProvider extends BaseProvider {
             content.push({ type: 'text', text: m.content })
           }
           for (const tc of m.tool_calls) {
+            const t = tc as { id: string; function: { name: string; arguments: string } }
             content.push({
               type: 'tool_use',
-              id: tc.id,
-              name: tc.function.name,
-              input: this.parseJsonSafely(tc.function.arguments) || {},
+              id: t.id,
+              name: t.function.name,
+              input: this.parseJsonSafely(t.function.arguments) || {},
             })
           }
           return { role: 'assistant', content }

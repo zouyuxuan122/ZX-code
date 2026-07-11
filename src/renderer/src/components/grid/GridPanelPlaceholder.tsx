@@ -18,6 +18,7 @@ const PANEL_OPTIONS: { type: PanelType; label: string }[] = [
   { type: 'heatmap', label: 'Token热力图' },
   { type: 'extensions', label: '扩展(Skill/MCP)' },
   { type: 'todo', label: 'AI待办' },
+  { type: 'kanban', label: '看板' },
 ]
 
 /** 空槽位占位：平面风格，点击展开面板选择菜单 */

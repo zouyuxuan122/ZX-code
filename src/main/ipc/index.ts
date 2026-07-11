@@ -16,10 +16,19 @@ import { registerWeatherIpc } from './weather.ipc'
 import { registerSearchIpc } from './search.ipc'
 import { registerTerminalIpc } from './terminal.ipc'
 import { registerChat2ApiIpc } from './chat2api.ipc'
+import { registerTtsIpc } from './tts.ipc'
+import { registerGoalIpc } from './goal.ipc'
+import { registerMemoryIpc } from './memory.ipc'
+import { registerSuperContextIpc } from './supercontext.ipc'
+import { registerSyncIpc } from './sync.ipc'
+import type { SchedulerService } from '../services/scheduler.service'
 import { getMainWindow } from '../window'
 import { APP_VERSION } from '@shared/constants/app'
 
-export function registerIpcHandlers(mainWindow: BrowserWindow): void {
+export function registerIpcHandlers(
+  mainWindow: BrowserWindow,
+  scheduler?: SchedulerService
+): void {
   registerProjectIpc()
   registerSettingsIpc()
   registerConversationIpc()
@@ -37,6 +46,11 @@ export function registerIpcHandlers(mainWindow: BrowserWindow): void {
   registerSearchIpc()
   registerTerminalIpc()
   registerChat2ApiIpc(mainWindow)
+  registerTtsIpc()
+  registerGoalIpc()
+  registerSuperContextIpc()
+  registerMemoryIpc()
+  registerSyncIpc(undefined, scheduler)
 
   ipcMain.handle('window:minimize', () => {
     getMainWindow()?.minimize()
