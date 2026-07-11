@@ -10,6 +10,9 @@ release/
 .vscode/
 .idea/
 .trae/
+
+# 开发规划文档
+docs/
 *.swp
 *.swo
 
