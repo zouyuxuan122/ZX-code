@@ -25,7 +25,7 @@ win:
       arch: [x64]
   icon: resources/icons/favicon.ico
   artifactName: ${productName}-${version}-${arch}.${ext}
-  signAndEditExecutable: false
+  signAndEditExecutable: true
 
 nsis:
   oneClick: false
