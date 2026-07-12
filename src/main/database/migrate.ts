@@ -201,6 +201,112 @@ const migrations: Migration[] = [
       CREATE INDEX IF NOT EXISTS idx_sync_sources_type ON sync_sources(type);
     `,
   },
+  {
+    name: '008_hermes_evolution',
+    sql: `
+      CREATE TABLE IF NOT EXISTS agent_traces (
+        id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+        conversation_id TEXT NOT NULL,
+        message_id TEXT,
+        trace TEXT NOT NULL,
+        total_duration_ms INTEGER,
+        tool_call_count INTEGER DEFAULT 0,
+        success_count INTEGER DEFAULT 0,
+        failure_count INTEGER DEFAULT 0,
+        created_at INTEGER NOT NULL DEFAULT (unixepoch() * 1000),
+        FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE
+      );
+      CREATE INDEX IF NOT EXISTS idx_agent_traces_conversation ON agent_traces(conversation_id);
+      CREATE INDEX IF NOT EXISTS idx_agent_traces_created ON agent_traces(created_at);
+
+      CREATE TABLE IF NOT EXISTS skill_versions (
+        id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+        skill_id TEXT NOT NULL,
+        version INTEGER NOT NULL,
+        content TEXT NOT NULL,
+        score REAL,
+        score_breakdown TEXT,
+        created_reason TEXT,
+        is_current INTEGER DEFAULT 0,
+        created_at INTEGER NOT NULL DEFAULT (unixepoch() * 1000)
+      );
+      CREATE INDEX IF NOT EXISTS idx_skill_versions_skill ON skill_versions(skill_id);
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_skill_versions_skill_version ON skill_versions(skill_id, version);
+
+      CREATE TABLE IF NOT EXISTS evolution_runs (
+        id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+        skill_id TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'running',
+        iterations INTEGER DEFAULT 0,
+        baseline_score REAL,
+        best_score REAL,
+        best_variant_id TEXT,
+        variant_count INTEGER DEFAULT 0,
+        summary TEXT,
+        created_at INTEGER NOT NULL DEFAULT (unixepoch() * 1000),
+        completed_at INTEGER
+      );
+      CREATE INDEX IF NOT EXISTS idx_evolution_runs_skill ON evolution_runs(skill_id);
+
+      CREATE TABLE IF NOT EXISTS user_profile (
+        id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+        dimension TEXT NOT NULL,
+        value TEXT NOT NULL,
+        confidence REAL DEFAULT 0.5,
+        source TEXT DEFAULT 'auto',
+        updated_at INTEGER NOT NULL DEFAULT (unixepoch() * 1000),
+        created_at INTEGER NOT NULL DEFAULT (unixepoch() * 1000)
+      );
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_user_profile_dimension ON user_profile(dimension);
+
+      CREATE TABLE IF NOT EXISTS agent_cron_jobs (
+        id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+        name TEXT NOT NULL,
+        description TEXT NOT NULL,
+        cron_expression TEXT NOT NULL,
+        project_id TEXT,
+        enabled INTEGER DEFAULT 1,
+        allow_write_tools INTEGER DEFAULT 0,
+        last_run_at INTEGER,
+        last_run_result TEXT,
+        last_run_status TEXT,
+        run_count INTEGER DEFAULT 0,
+        created_at INTEGER NOT NULL DEFAULT (unixepoch() * 1000),
+        updated_at INTEGER NOT NULL DEFAULT (unixepoch() * 1000),
+        FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE SET NULL
+      );
+    `,
+  },
+  {
+    name: '009_fts5_messages',
+    sql: `
+      CREATE VIRTUAL TABLE IF NOT EXISTS messages_fts USING fts5(
+        content,
+        conversation_id UNINDEXED,
+        message_id UNINDEXED,
+        content_rowid='rowid',
+        tokenize='unicode61 remove_diacritics 2'
+      );
+
+      INSERT INTO messages_fts (content, conversation_id, message_id)
+        SELECT content, conversation_id, id FROM messages;
+
+      CREATE TRIGGER IF NOT EXISTS messages_fts_ai AFTER INSERT ON messages BEGIN
+        INSERT INTO messages_fts (content, conversation_id, message_id)
+        VALUES (new.content, new.conversation_id, new.id);
+      END;
+
+      CREATE TRIGGER IF NOT EXISTS messages_fts_ad AFTER DELETE ON messages BEGIN
+        DELETE FROM messages_fts WHERE message_id = old.id;
+      END;
+
+      CREATE TRIGGER IF NOT EXISTS messages_fts_au AFTER UPDATE ON messages BEGIN
+        DELETE FROM messages_fts WHERE message_id = old.id;
+        INSERT INTO messages_fts (content, conversation_id, message_id)
+        VALUES (new.content, new.conversation_id, new.id);
+      END;
+    `,
+  },
 ]
 
 export function runMigrations(db: Database.Database): void {
@@ -272,6 +378,8 @@ function insertDefaultSettings(db: Database.Database): void {
     'tokenJuice.maxToolOutputChars': { value: 8000, category: 'model' },
     'sync.enabled': { value: false, category: 'sync' },
     'sync.intervalMinutes': { value: 20, category: 'sync' },
+    'evolution.enabled': { value: true, category: 'evolution' },
+    'profile.enabled': { value: true, category: 'profile' },
   }
 
   const stmt = db.prepare(

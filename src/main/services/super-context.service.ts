@@ -8,6 +8,7 @@ import type {
   BriefingMemoryItem,
   BriefingHistoryItem,
 } from '../../shared/types/supercontext'
+import { getConversationsByFts } from '../database/repositories/search.repo'
 
 /**
  * SuperContext 上下文预热服务
@@ -145,26 +146,29 @@ export class SuperContextService {
     return items
   }
 
-  /** 搜索历史相似对话（≤2） */
+  /** 搜索历史相似对话（≤2），使用 FTS5 全文检索替代 LIKE 匹配 */
   private async searchHistories(userMessage: string): Promise<BriefingHistoryItem[]> {
     const keywords = this.extractKeywords(userMessage)
     if (keywords.length === 0) return []
 
     try {
-      const conversations = this.db
-        .prepare(
-          `SELECT DISTINCT c.id, c.title
-           FROM conversations c
-           JOIN messages m ON m.conversation_id = c.id
-           WHERE ${keywords.map(() => 'm.content LIKE ?').join(' OR ')}
-           ORDER BY c.updated_at DESC
-           LIMIT 2`,
-        )
-        .all(...keywords.map((k) => `%${k}%`)) as Array<{ id: string; title: string }>
+      const ftsQuery = keywords.join(' ')
+      const ftsResults = getConversationsByFts(this.db, ftsQuery, 2)
 
-      return conversations.map((c) => ({
-        conversationId: c.id,
-        title: c.title,
+      if (ftsResults.length === 0) return []
+
+      // 获取对话标题
+      const conversationIds = ftsResults.map((r) => r.conversationId)
+      const placeholders = conversationIds.map(() => '?').join(',')
+      const convs = this.db
+        .prepare(`SELECT id, title FROM conversations WHERE id IN (${placeholders})`)
+        .all(...conversationIds) as Array<{ id: string; title: string }>
+
+      const titleMap = new Map(convs.map((c) => [c.id, c.title]))
+
+      return ftsResults.map((r) => ({
+        conversationId: r.conversationId,
+        title: titleMap.get(r.conversationId) ?? '',
         summary: '',
       }))
     } catch {

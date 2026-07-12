@@ -5,6 +5,7 @@ node_modules/
 out/
 dist/
 release/
+release-v2/
 
 # IDE
 .vscode/
@@ -54,3 +55,8 @@ tmp_trace.mjs
 
 # TypeScript 构建缓存
 *.tsbuildinfo
+
+# 临时文件
+.tmp_release_notes.md
+.tmp_commit_msg.txt
+scripts/*.exe

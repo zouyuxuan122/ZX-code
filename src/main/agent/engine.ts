@@ -7,6 +7,7 @@ import type { TokenJuiceConfig } from '../services/token-juice.service'
 import { SuperContextService } from '../services/super-context.service'
 import { MemoryRecallService } from '../services/memory-recall.service'
 import { MemoryExtractService } from '../services/memory-extract.service'
+import { SkillCreatorService, type SkillDraftGenerator } from '../services/skill-creator.service'
 import { getDb } from '../database'
 import * as settingsRepo from '../database/repositories/settings.repo'
 import type { ChatParams, ChatChunk } from '@shared/types/model'
@@ -14,7 +15,10 @@ import type { ChatMessage, ToolCall } from '@shared/types/conversation'
 import type { ToolExecutionResult, ToolContext, SubAgentParams, SubAgentResult, ToolDefinition } from '@shared/types/tool'
 import type { RecallResultItem } from '@shared/types/memory'
 import type { AgentEvent, AgentRunParams, AgentUsage } from './types'
-import { buildMemoryRecallSection, createMemoryExtractor, extractKeywords } from './engine.memory'
+import { buildMemoryRecallSection, buildUserProfileSection, createMemoryExtractor, extractKeywords } from './engine.memory'
+import { ProfileBuilderService } from '../services/profile-builder.service'
+import { getTraceService } from '../services/trace.service'
+import type { AgentTrace, TraceEntry, ToolCallTrace } from '@shared/types/trace'
 
 /**
  * 读取 TokenJuice 压缩配置(settings 表 category=model)
@@ -38,6 +42,12 @@ function getTokenJuiceConfig(): TokenJuiceConfig {
  */
 function compressForContext(content: string): string {
   return compressToolOutput(content, getTokenJuiceConfig()).output
+}
+
+/** 截断文本用于轨迹摘要(避免 DB 行过大) */
+function summarizeText(text: string, maxLen = 200): string {
+  if (!text) return ''
+  return text.length > maxLen ? text.slice(0, maxLen) + '...' : text
 }
 
 /**
@@ -130,6 +140,24 @@ function buildMemoryRecallText(userMessage: string): string {
 }
 
 /**
+ * 构建用户画像 section(用于注入 system message)
+ * 读取 user_profile 表生成 ≤500 字符摘要,失败时返回空字符串不阻塞对话
+ */
+function buildUserProfileText(): string {
+  try {
+    const profileEnabled = settingsRepo.get('profile.enabled')
+    if (profileEnabled === false) return ''
+    const db = getDb()
+    const profileBuilder = new ProfileBuilderService(db)
+    const summary = profileBuilder.buildProfileSummary()
+    return buildUserProfileSection(summary)
+  } catch (err) {
+    logger.warn(`用户画像构建失败: ${(err as Error).message}`)
+    return ''
+  }
+}
+
+/**
  * 对话结束后异步触发记忆抽取(fire-and-forget,不阻塞对话完成)
  * 失败时静默处理,不影响主流程
  */
@@ -171,6 +199,148 @@ function triggerMemoryExtraction(
     })
   } catch (err) {
     logger.warn(`记忆抽取触发失败: ${(err as Error).message}`)
+  }
+}
+
+/**
+ * 对话结束后异步触发用户画像抽取(fire-and-forget,不阻塞对话完成)
+ * 失败时静默处理,不影响主流程
+ */
+function triggerProfileExtraction(
+  providerId: string,
+  model: string,
+  messages: ChatMessage[],
+): void {
+  try {
+    if (messages.length === 0) return
+    const profileEnabled = settingsRepo.get('profile.enabled')
+    if (profileEnabled === false) return
+
+    const db = getDb()
+    // 构建 LLM 调用函数(流式累积为完整字符串)
+    const llmCaller = async (prompt: string): Promise<string> => {
+      const chatParams: ChatParams = {
+        model,
+        messages: [{ role: 'user' as const, content: prompt }],
+        stream: true,
+      }
+      let fullContent = ''
+      for await (const chunk of chatWithProvider(providerId, chatParams) as AsyncGenerator<ChatChunk>) {
+        if (chunk.content) fullContent += chunk.content
+      }
+      return fullContent
+    }
+    const profileBuilder = new ProfileBuilderService(db, llmCaller)
+    // 拼接对话文本(只保留有内容的消息)
+    const conversationText = messages
+      .filter(m => m.content !== null)
+      .map(m => `${m.role}: ${m.content || ''}`)
+      .join('\n')
+    // 异步执行,不等待(fire-and-forget)
+    profileBuilder.maybeExtractAndMerge(conversationText).catch((err: unknown) => {
+      logger.warn(`用户画像抽取失败: ${(err as Error).message}`)
+    })
+  } catch (err) {
+    logger.warn(`用户画像抽取触发失败: ${(err as Error).message}`)
+  }
+}
+
+/**
+ * 对话结束后异步触发技能创建(fire-and-forget,不阻塞对话完成)
+ * 当对话足够复杂(工具调用多或用户表达满意)时,调用 LLM 抽取可复用技能
+ * 失败时静默处理,不影响主流程
+ */
+function triggerSkillCreation(
+  providerId: string,
+  model: string,
+  messages: ChatMessage[],
+  toolCallCount: number,
+  traceEntries: TraceEntry[],
+  conversationId: string,
+): void {
+  try {
+    if (messages.length === 0) return
+    const evolutionEnabled = settingsRepo.get('evolution.enabled')
+    if (evolutionEnabled === false) return
+
+    const lastUserMessage =
+      [...messages].reverse().find((m) => m.role === 'user')?.content || ''
+
+    // 构建对话摘要(限制长度避免超出上下文)
+    const conversationSummary = messages
+      .filter((m) => m.content !== null)
+      .map((m) => `${m.role}: ${m.content || ''}`)
+      .join('\n')
+      .slice(0, 8000)
+
+    // 构建工具调用摘要
+    const toolCallsSummary = traceEntries
+      .flatMap((e) => e.toolCalls.map((tc) => `${tc.toolName}(${tc.argsSummary})`))
+      .join(', ')
+
+    // 创建 LLM 生成器(流式累积为完整字符串后解析 JSON)
+    const generator: SkillDraftGenerator = async (convSummary, toolsSummary) => {
+      const systemPrompt = `你是一个技能抽取器。从以下对话和工具调用中提取可复用的技能。
+如果对话包含值得沉淀为技能的经验(如特定工作流、调试方法、代码模式),返回 JSON 对象:
+{"name":"技能名称","description":"一句话描述","content":"Markdown 格式的技能指令文本","tags":["标签"]}
+如果对话不值得创建技能(太简单、无复用价值),返回 null。
+只返回纯 JSON 或 null,不要其他文字。`
+
+      const chatParams: ChatParams = {
+        model,
+        messages: [
+          { role: 'system' as const, content: systemPrompt },
+          {
+            role: 'user' as const,
+            content: `对话摘要:\n${convSummary}\n\n工具调用:\n${toolsSummary}`,
+          },
+        ],
+        stream: true,
+      }
+      let fullContent = ''
+      for await (const chunk of chatWithProvider(providerId, chatParams) as AsyncGenerator<ChatChunk>) {
+        if (chunk.content) fullContent += chunk.content
+      }
+
+      const trimmed = fullContent.trim()
+      if (!trimmed || trimmed === 'null') return null
+
+      // 尝试提取 JSON(LLM 可能包裹在 markdown 代码块中)
+      const jsonMatch = trimmed.match(/\{[\s\S]*\}/)
+      if (!jsonMatch) return null
+
+      const parsed = JSON.parse(jsonMatch[0])
+      if (
+        !parsed ||
+        typeof parsed.name !== 'string' ||
+        typeof parsed.description !== 'string' ||
+        typeof parsed.content !== 'string'
+      ) {
+        return null
+      }
+      return {
+        name: parsed.name,
+        description: parsed.description,
+        content: parsed.content,
+        tags: Array.isArray(parsed.tags) ? parsed.tags : [],
+      }
+    }
+
+    const skillCreator = new SkillCreatorService(generator)
+    // 异步执行,不等待(fire-and-forget)
+    skillCreator
+      .maybeCreateSkill({
+        conversationId,
+        toolCallCount,
+        userMessage: lastUserMessage,
+        conversationSummary,
+        toolCallsSummary,
+      })
+      .catch((err: unknown) => {
+        logger.warn(`技能创建失败: ${(err as Error).message}`)
+      })
+  } catch (err) {
+    logger.warn(`技能创建触发失败: ${(err as Error).message}`)
   }
 }
 
@@ -246,8 +416,29 @@ export class AgentEngine {
       }
     }
 
+    // 用户画像注入：将用户画像摘要追加到 system message
+    // 失败时降级为空文本，不阻塞对话
+    {
+      const profileSection = buildUserProfileText()
+      if (profileSection) {
+        const systemIdx = workingMessages.findIndex(m => m.role === 'system')
+        if (systemIdx >= 0) {
+          workingMessages[systemIdx] = {
+            ...workingMessages[systemIdx],
+            content: `${workingMessages[systemIdx].content}\n\n${profileSection}`,
+          }
+        } else {
+          workingMessages.unshift({ role: 'system', content: profileSection })
+        }
+      }
+    }
+
     let lastUsage: AgentUsage | undefined
     let lastFinishReason: 'stop' | 'length' | 'tool_calls' | null = null
+
+    // 轨迹收集:记录每轮迭代和工具调用,对话结束后异步持久化(fire-and-forget)
+    const traceStartTime = Date.now()
+    const traceEntries: TraceEntry[] = []
 
     try {
       for (let iteration = 0; iteration < maxIterations; iteration++) {
@@ -257,6 +448,8 @@ export class AgentEngine {
           yield { type: 'finish', reason: 'stop', usage: lastUsage }
           return
         }
+        const iterStartTime = Date.now()
+        const iterToolCallTraces: ToolCallTrace[] = []
         const chatParams: ChatParams = {
           model,
           messages: workingMessages.map(m => ({
@@ -381,6 +574,11 @@ export class AgentEngine {
 
         if (toolCalls.length === 0) {
           // 没有工具调用：本轮即结束
+          traceEntries.push({
+            iteration,
+            toolCalls: [],
+            iterationDurationMs: Date.now() - iterStartTime,
+          })
           const reason: 'stop' | 'length' =
             chunkFinishReason === 'length' ? 'length' : 'stop'
           yield { type: 'finish', reason, usage: lastUsage }
@@ -393,8 +591,13 @@ export class AgentEngine {
           tool_calls: toolCalls.map(tc => ({ id: tc.id, name: tc.name, args: tc.args })),
         }
 
-        // 处理工具调用
-        const shouldContinue = yield* this.handleToolCalls(
+        // 处理工具调用(手动消费生成器以拦截事件,收集轨迹数据)
+        const toolCallInfoMap = new Map<string, { name: string; args: string }>()
+        for (const tc of toolCalls) {
+          toolCallInfoMap.set(tc.id, { name: tc.name, args: tc.args })
+        }
+        const toolCallStartTimes = new Map<string, number>()
+        const handleGen = this.handleToolCalls(
           toolCalls,
           context,
           conversationId,
@@ -403,6 +606,37 @@ export class AgentEngine {
           spawnSubAgent,
           workingMessages,
         )
+        let shouldContinue = true
+        while (true) {
+          const genResult = await handleGen.next()
+          if (genResult.done) {
+            shouldContinue = genResult.value as boolean
+            break
+          }
+          const ev = genResult.value
+          if (ev.type === 'tool_call_start') {
+            toolCallStartTimes.set(ev.tool_call_id, Date.now())
+          }
+          if (ev.type === 'tool_call_end') {
+            const startTime = toolCallStartTimes.get(ev.tool_call_id)
+            const info = toolCallInfoMap.get(ev.tool_call_id)
+            iterToolCallTraces.push({
+              toolName: info?.name ?? 'unknown',
+              argsSummary: summarizeText(info?.args ?? ''),
+              resultSummary: summarizeText(ev.result.content),
+              durationMs: startTime ? Date.now() - startTime : 0,
+              success: !ev.result.is_error,
+              ...(ev.result.is_error ? { error: summarizeText(ev.result.content) } : {}),
+            })
+          }
+          yield ev
+        }
+
+        traceEntries.push({
+          iteration,
+          toolCalls: iterToolCallTraces,
+          iterationDurationMs: Date.now() - iterStartTime,
+        })
 
         if (!shouldContinue) {
           // 工具被拒绝或失败导致无法继续，直接结束
@@ -424,6 +658,33 @@ export class AgentEngine {
     } finally {
       // 对话结束后异步抽取记忆(fire-and-forget,不阻塞对话完成回调)
       triggerMemoryExtraction(providerId, model, workingMessages)
+
+      // 对话结束后异步抽取用户画像(fire-and-forget,不阻塞对话完成回调)
+      triggerProfileExtraction(providerId, model, workingMessages)
+
+      // 对话结束后异步创建技能(fire-and-forget,不阻塞对话完成回调)
+      const skillToolCallCount = traceEntries.reduce((sum, e) => sum + e.toolCalls.length, 0)
+      triggerSkillCreation(providerId, model, workingMessages, skillToolCallCount, traceEntries, conversationId)
+
+      // 异步记录 Agent 轨迹(fire-and-forget,不阻塞对话完成)
+      const totalToolCallCount = skillToolCallCount
+      const successCount = traceEntries.reduce(
+        (sum, e) => sum + e.toolCalls.filter((c) => c.success).length,
+        0,
+      )
+      const failureCount = totalToolCallCount - successCount
+      const trace: AgentTrace = {
+        conversationId,
+        entries: traceEntries,
+        totalDurationMs: Date.now() - traceStartTime,
+        totalToolCallCount,
+        successCount,
+        failureCount,
+        createdAt: Date.now(),
+      }
+      getTraceService().recordTrace(trace).catch(() => {
+        // 轨迹记录失败不影响主流程
+      })
     }
   }
 

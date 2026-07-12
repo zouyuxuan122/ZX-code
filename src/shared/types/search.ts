@@ -37,3 +37,20 @@ export interface SearchOptions {
   /** 是否全词匹配（仅内容搜索生效） */
   wholeWord?: boolean
 }
+
+/** 消息级搜索结果（FTS5） */
+export interface MessageSearchResult {
+  messageId: string
+  conversationId: string
+  content: string
+  snippet: string
+  rank: number
+}
+
+/** 对话级搜索结果（FTS5 去重后） */
+export interface ConversationSearchResult {
+  conversationId: string
+  matchCount: number
+  bestSnippet: string
+  lastMatchAt: number
+}

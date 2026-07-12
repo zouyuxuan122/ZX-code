@@ -264,6 +264,10 @@ export const api: IpcApi = {
   },
   search: {
     files: (options: SearchOptions) => ipcRenderer.invoke('search:files', options),
+    messages: (keyword: string, limit?: number) =>
+      ipcRenderer.invoke('search:messages', keyword, limit),
+    conversations: (keyword: string, limit?: number) =>
+      ipcRenderer.invoke('search:conversations', keyword, limit),
   },
   terminal: {
     create: (shell: 'powershell' | 'cmd' | 'bash' | 'wsl', cwd: string) =>
@@ -338,5 +342,28 @@ export const api: IpcApi = {
     removeSource: (id) => ipcRenderer.invoke('sync:removeSource', id),
     triggerNow: () => ipcRenderer.invoke('sync:triggerNow'),
     getSchedulerStatus: () => ipcRenderer.invoke('sync:getSchedulerStatus'),
+  },
+  evolution: {
+    run: (params) => ipcRenderer.invoke('evolution:run', params),
+    history: (skillId: string) => ipcRenderer.invoke('evolution:history', skillId),
+    rollback: (skillId: string, versionId: string) =>
+      ipcRenderer.invoke('evolution:rollback', skillId, versionId),
+    compare: (runId: string) => ipcRenderer.invoke('evolution:compare', runId),
+  },
+  profile: {
+    get: () => ipcRenderer.invoke('profile:get'),
+    update: (params) => ipcRenderer.invoke('profile:update', params),
+    clear: () => ipcRenderer.invoke('profile:clear'),
+  },
+  cron: {
+    create: (params) => ipcRenderer.invoke('cron:create', params),
+    list: () => ipcRenderer.invoke('cron:list'),
+    delete: (id: string) => ipcRenderer.invoke('cron:delete', id),
+    toggle: (id: string) => ipcRenderer.invoke('cron:toggle', id),
+    history: () => ipcRenderer.invoke('cron:history'),
+  },
+  trace: {
+    query: (query) => ipcRenderer.invoke('trace:query', query),
+    stats: () => ipcRenderer.invoke('trace:stats'),
   },
 }

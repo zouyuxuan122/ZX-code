@@ -21,6 +21,10 @@ import { registerGoalIpc } from './goal.ipc'
 import { registerMemoryIpc } from './memory.ipc'
 import { registerSuperContextIpc } from './supercontext.ipc'
 import { registerSyncIpc } from './sync.ipc'
+import { registerEvolutionIpc } from './evolution.ipc'
+import { registerProfileIpc } from './profile.ipc'
+import { registerCronIpc } from './cron.ipc'
+import { registerTraceIpc } from './trace.ipc'
 import type { SchedulerService } from '../services/scheduler.service'
 import { getMainWindow } from '../window'
 import { APP_VERSION } from '@shared/constants/app'
@@ -51,6 +55,10 @@ export function registerIpcHandlers(
   registerSuperContextIpc()
   registerMemoryIpc()
   registerSyncIpc(undefined, scheduler)
+  registerEvolutionIpc()
+  registerProfileIpc()
+  registerCronIpc(undefined, undefined)
+  registerTraceIpc()
 
   ipcMain.handle('window:minimize', () => {
     getMainWindow()?.minimize()

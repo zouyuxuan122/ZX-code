@@ -20,7 +20,7 @@ export function createMainWindow(): BrowserWindow {
     titleBarStyle: 'hidden',
     backgroundColor: '#0d1117',
     show: false,
-    icon: path.join(__dirname, '../../resources/icons/favicon.png'),
+    icon: path.join(__dirname, '../../resources/icons/favicon.ico'),
     webPreferences: {
       preload: path.join(__dirname, '../preload/index.js'),
       contextIsolation: true,

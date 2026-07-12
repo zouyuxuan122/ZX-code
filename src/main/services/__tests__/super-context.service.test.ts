@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import Database from 'better-sqlite3'
 import { SuperContextService } from '../super-context.service'
 import { MemoryRecallService } from '../memory-recall.service'
+import { runMigrations } from '../../database/migrate'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as os from 'os'
@@ -14,15 +15,8 @@ let tmpDir: string
 
 beforeEach(() => {
   db = new Database(':memory:')
-  db.exec(`
-    CREATE TABLE memory_nodes (
-      id TEXT PRIMARY KEY, parent_id TEXT, partition TEXT NOT NULL,
-      title TEXT NOT NULL, content TEXT NOT NULL, tags TEXT DEFAULT '[]',
-      created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL
-    );
-    CREATE TABLE conversations (id TEXT PRIMARY KEY, title TEXT, project_id TEXT, updated_at INTEGER);
-    CREATE TABLE messages (id TEXT PRIMARY KEY, conversation_id TEXT, role TEXT, content TEXT, created_at INTEGER);
-  `)
+  db.pragma('foreign_keys = ON')
+  runMigrations(db)
   recallService = new MemoryRecallService(db)
   tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'zx-superctx-'))
 

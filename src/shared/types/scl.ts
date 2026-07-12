@@ -30,8 +30,8 @@ export interface SclExtension {
   tags: string[]
   /** 是否启用 */
   enabled: boolean
-  /** 来源：内置 / 远程 / 本地 */
-  source: 'builtin' | 'remote' | 'local'
+  /** 来源：内置 / 远程 / 本地 / 自动(进化生成) */
+  source: 'builtin' | 'remote' | 'local' | 'auto'
   /** 远程来源 URL（source=remote 时有值） */
   sourceUrl?: string
   /** emoji 图标 */

@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   ArrowLeft, Settings, Cpu, Key, Shield, Palette,
-  FileText, FolderGit2, Plug, Globe, LayoutGrid, Volume2, Brain, RefreshCw
+  FileText, FolderGit2, Plug, Globe, LayoutGrid, Volume2, Brain, RefreshCw,
+  Sparkles, Search, UserCircle, CalendarClock, Activity,
 } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Button } from '@/components/ui/Button'
@@ -20,6 +21,11 @@ import { PetSettings } from '@/components/settings/PetSettings'
 import { TtsSettings } from '@/components/settings/TtsSettings'
 import { MemorySettings } from '@/components/settings/MemorySettings'
 import { SyncSettings } from '@/components/settings/SyncSettings'
+import { SkillEvolutionSettings } from '@/components/settings/SkillEvolutionSettings'
+import { HistorySearchSettings } from '@/components/settings/HistorySearchSettings'
+import { UserProfileSettings } from '@/components/settings/UserProfileSettings'
+import { CronJobsSettings } from '@/components/settings/CronJobsSettings'
+import { TraceExplorerSettings } from '@/components/settings/TraceExplorerSettings'
 import { cn } from '@/utils/cn'
 
 const settingTabs = [
@@ -35,6 +41,11 @@ const settingTabs = [
   { id: 'tts', label: '语音合成', icon: Volume2, desc: 'TTS 引擎、音色、声音克隆' },
   { id: 'memory', label: '记忆', icon: Brain, desc: '记忆检索、编辑、导出' },
   { id: 'sync', label: '自动同步', icon: RefreshCw, desc: '外部数据源拉取、调度器' },
+  { id: 'evolution', label: '技能进化', icon: Sparkles, desc: 'SCL 技能自动进化与版本管理' },
+  { id: 'history', label: '历史搜索', icon: Search, desc: '跨会话全文检索与摘要' },
+  { id: 'profile', label: '用户画像', icon: UserCircle, desc: '用户偏好、编码风格画像' },
+  { id: 'cron', label: '定时任务', icon: CalendarClock, desc: 'Cron 定时 Agent 自主执行' },
+  { id: 'trace', label: '轨迹浏览器', icon: Activity, desc: 'Agent 执行轨迹查询与分析' },
   { id: 'log', label: '日志', icon: FileText, desc: '日志级别、错误报告' },
 ]
 
@@ -143,6 +154,11 @@ export default function SettingsPage() {
                   {activeTab === 'tts' && <TtsSettings />}
                   {activeTab === 'memory' && <MemorySettings />}
                   {activeTab === 'sync' && <SyncSettings />}
+                  {activeTab === 'evolution' && <SkillEvolutionSettings />}
+                  {activeTab === 'history' && <HistorySearchSettings />}
+                  {activeTab === 'profile' && <UserProfileSettings />}
+                  {activeTab === 'cron' && <CronJobsSettings />}
+                  {activeTab === 'trace' && <TraceExplorerSettings />}
                   {activeTab === 'log' && <LogSettings />}
                 </>
               )}

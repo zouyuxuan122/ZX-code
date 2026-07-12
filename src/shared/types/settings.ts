@@ -15,6 +15,8 @@ export type SettingCategory =
   | 'tts'
   | 'memory'
   | 'sync'
+  | 'evolution'
+  | 'profile'
 
 export interface Setting {
   key: string
@@ -79,4 +81,8 @@ export interface DefaultSettings {
   // 自动同步设置
   'sync.enabled': boolean
   'sync.intervalMinutes': number
+  // 技能进化设置
+  'evolution.enabled': boolean
+  // 用户画像设置
+  'profile.enabled': boolean
 }

@@ -5,7 +5,7 @@ import { initDatabase, closeDatabase, getDb } from './database'
 import { initLogger, logger } from './services/logger.service'
 import { createTray, destroyTray } from './services/tray.service'
 import { createDefaultProviders } from './providers'
-import { registerBuiltinTools } from './tools'
+import { registerBuiltinTools, getCronAgentService } from './tools'
 import { initChat2Api, startChat2ApiServer, stopChat2ApiServer } from './chat2api'
 import { terminalService } from './services/terminal.service'
 import { disconnectAllServers } from './services/mcp.service'
@@ -109,8 +109,15 @@ if (!gotTheLock) {
     logger.info('默认 Provider 已就绪')
 
     // 注册内置工具
-    registerBuiltinTools()
+    registerBuiltinTools(scheduler)
     logger.info('内置工具已注册')
+
+    // 加载并注册所有已启用的 Cron Agent 任务
+    const cronAgentService = getCronAgentService()
+    if (cronAgentService) {
+      cronAgentService.loadAndRegisterAll()
+      logger.info('Cron Agent 任务已加载')
+    }
 
     createMainWindow()
     createTray(getMainWindow)

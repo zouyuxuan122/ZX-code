@@ -1,9 +1,13 @@
 import type { RecallResultItem } from '../../shared/types/memory'
 import type { ExtractedMemory } from '../services/memory-extract.service'
 import type { Message } from '../../shared/types/conversation'
+import type { UserProfileSummary } from '../../shared/types/user-profile'
 
 /** LLM 补全函数类型 */
 type CompleteFn = (params: { content: string; systemPrompt?: string }) => Promise<{ content: string }>
+
+/** 用户画像 section 的最大字符数(含标题) */
+const MAX_PROFILE_SECTION_LEN = 500
 
 /**
  * 构建记忆检索 section,注入 system prompt
@@ -67,6 +71,20 @@ ${conversationText}`
       return []
     }
   }
+}
+
+/**
+ * 构建用户画像 section,注入 system prompt
+ * - 无摘要或空 raw 时返回空字符串
+ * - 有画像时返回格式化的 "## 用户画像" section
+ */
+export function buildUserProfileSection(summary?: UserProfileSummary | null): string {
+  if (!summary || !summary.raw) return ''
+  const section = `## 用户画像\n${summary.raw}`
+  if (section.length > MAX_PROFILE_SECTION_LEN) {
+    return section.slice(0, MAX_PROFILE_SECTION_LEN)
+  }
+  return section
 }
 
 /**

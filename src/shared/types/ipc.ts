@@ -8,7 +8,7 @@ import type { McpApi } from './mcp'
 import type { SclApi } from './scl'
 import type { UsageStatsApi } from './usage'
 import type { WeatherApi } from './weather'
-import type { FileSearchResult, SearchOptions } from './search'
+import type { FileSearchResult, SearchOptions, MessageSearchResult, ConversationSearchResult } from './search'
 import type { TerminalApi } from './terminal'
 import type { ContextBriefing } from './supercontext'
 import type {
@@ -28,6 +28,10 @@ import type {
   UpdateSyncSourceDto,
   FullSyncResult,
 } from './sync'
+import type { EvolutionRunParams, EvolutionRunResult, EvolutionRun, SkillVersion } from './skill-evolution'
+import type { UserProfileEntry, ProfileDimension } from './user-profile'
+import type { AgentCronJob, CreateCronJobDto } from './cron-agent'
+import type { AgentTrace, TraceQuery, TraceStats } from './trace'
 
 export interface ProjectApi {
   list: () => Promise<Project[]>
@@ -342,6 +346,10 @@ export interface PermissionApi {
 export interface SearchApi {
   /** 按文件名 / 内容搜索工作区文件 */
   files: (options: SearchOptions) => Promise<FileSearchResult[]>
+  /** FTS5 全文搜索消息，返回带高亮片段的结果列表 */
+  messages: (keyword: string, limit?: number) => Promise<MessageSearchResult[]>
+  /** FTS5 全文搜索，返回按对话去重的结果列表 */
+  conversations: (keyword: string, limit?: number) => Promise<ConversationSearchResult[]>
 }
 
 /** TTS 合成响应 */
@@ -458,6 +466,64 @@ export interface SyncApi {
   getSchedulerStatus: () => Promise<SchedulerStatus>
 }
 
+/** 技能进化对比结果 */
+export interface EvolutionCompareResult {
+  run: EvolutionRun
+  versions: SkillVersion[]
+}
+
+/** 技能进化 API */
+export interface EvolutionApi {
+  /** 运行完整进化流程 */
+  run: (params: EvolutionRunParams) => Promise<EvolutionRunResult>
+  /** 查询指定技能的进化运行历史 */
+  history: (skillId: string) => Promise<EvolutionRun[]>
+  /** 回滚到指定版本 */
+  rollback: (skillId: string, versionId: string) => Promise<boolean>
+  /** 返回基线与最佳变体的对比数据 */
+  compare: (runId: string) => Promise<EvolutionCompareResult | null>
+}
+
+/** 用户画像更新参数 */
+export interface ProfileUpdateParams {
+  dimension: ProfileDimension
+  value: string
+  confidence?: number
+  source?: 'auto' | 'manual'
+}
+
+/** 用户画像 API */
+export interface ProfileApi {
+  /** 返回全部画像条目 */
+  get: () => Promise<UserProfileEntry[]>
+  /** 插入或更新指定维度 */
+  update: (params: ProfileUpdateParams) => Promise<void>
+  /** 清空全部画像 */
+  clear: () => Promise<void>
+}
+
+/** Cron Agent 任务 API */
+export interface CronApi {
+  /** 创建新的 cron 任务 */
+  create: (params: CreateCronJobDto) => Promise<AgentCronJob>
+  /** 列出所有任务 */
+  list: () => Promise<AgentCronJob[]>
+  /** 删除指定任务 */
+  delete: (id: string) => Promise<void>
+  /** 切换任务启用状态 */
+  toggle: (id: string) => Promise<void>
+  /** 查询所有任务（历史） */
+  history: () => Promise<AgentCronJob[]>
+}
+
+/** Agent 轨迹 API */
+export interface TraceApi {
+  /** 按条件查询轨迹 */
+  query: (query: TraceQuery) => Promise<AgentTrace[]>
+  /** 获取轨迹聚合统计 */
+  stats: () => Promise<TraceStats | null>
+}
+
 export interface Chat2ApiApi {
   listAccounts(providerId?: string): Promise<any[]>
   deleteAccount(accountId: string): Promise<boolean>
@@ -506,6 +572,14 @@ export interface IpcApi {
   supercontext: SuperContextApi
   /** 外部数据源同步 */
   sync: SyncApi
+  /** 技能进化 */
+  evolution: EvolutionApi
+  /** 用户画像 */
+  profile: ProfileApi
+  /** Cron Agent 定时任务 */
+  cron: CronApi
+  /** Agent 轨迹查询与统计 */
+  trace: TraceApi
   /** 终端事件监听（输出 / 退出） */
   onTerminalOutput: (callback: (payload: { id: string; data: string }) => void) => () => void
   onTerminalExit: (callback: (payload: { id: string; code: number | null }) => void) => () => void

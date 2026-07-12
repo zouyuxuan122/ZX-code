@@ -9,7 +9,7 @@ import { getDb } from '../database'
 let tray: Tray | null = null
 
 export function createTray(getMainWindow: () => BrowserWindow | null): Tray {
-  const iconPath = path.join(__dirname, '../../resources/icons/favicon.png')
+  const iconPath = path.join(__dirname, '../../resources/icons/favicon.ico')
   
   let icon: NativeImage
   try {

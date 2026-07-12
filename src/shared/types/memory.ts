@@ -1,5 +1,5 @@
 /** 记忆分区 */
-export type MemoryPartition = 'project' | 'decision' | 'error' | 'preference' | 'subconscious' | 'general'
+export type MemoryPartition = 'project' | 'decision' | 'error' | 'preference' | 'subconscious' | 'general' | 'profile'
 
 /** 记忆节点 */
 export interface MemoryNode {
