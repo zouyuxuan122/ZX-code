@@ -51,26 +51,26 @@ export const api: IpcApi = {
       return () => ipcRenderer.removeListener('provider:modelsChanged', handler)
     },
   },
-  chat2api: {
+  zxWeb: {
     // 账户
-    listAccounts: (providerId?: string) => ipcRenderer.invoke('chat2api:accounts:list', providerId),
-    deleteAccount: (accountId: string) => ipcRenderer.invoke('chat2api:accounts:delete', accountId),
-    updateAccount: (accountId: string, updates: any) => ipcRenderer.invoke('chat2api:accounts:update', accountId, updates),
+    listAccounts: (providerId?: string) => ipcRenderer.invoke('zx-web:accounts:list', providerId),
+    deleteAccount: (accountId: string) => ipcRenderer.invoke('zx-web:accounts:delete', accountId),
+    updateAccount: (accountId: string, updates: any) => ipcRenderer.invoke('zx-web:accounts:update', accountId, updates),
     // Provider
-    listProviders: () => ipcRenderer.invoke('chat2api:providers:list'),
-    updateProvider: (providerId: string, updates: any) => ipcRenderer.invoke('chat2api:providers:update', providerId, updates),
+    listProviders: () => ipcRenderer.invoke('zx-web:providers:list'),
+    updateProvider: (providerId: string, updates: any) => ipcRenderer.invoke('zx-web:providers:update', providerId, updates),
     // OAuth
-    startLogin: (options: any) => ipcRenderer.invoke('chat2api:oauth:startLogin', options),
-    loginWithToken: (params: any) => ipcRenderer.invoke('chat2api:oauth:loginWithToken', params),
-    startInAppLogin: (options: any) => ipcRenderer.invoke('chat2api:oauth:startInAppLogin', options),
-    cancelLogin: () => ipcRenderer.invoke('chat2api:oauth:cancelLogin'),
+    startLogin: (options: any) => ipcRenderer.invoke('zx-web:oauth:startLogin', options),
+    loginWithToken: (params: any) => ipcRenderer.invoke('zx-web:oauth:loginWithToken', params),
+    startInAppLogin: (options: any) => ipcRenderer.invoke('zx-web:oauth:startInAppLogin', options),
+    cancelLogin: () => ipcRenderer.invoke('zx-web:oauth:cancelLogin'),
     validateToken: (providerId: string, providerType: string, credentials: any) =>
-      ipcRenderer.invoke('chat2api:oauth:validateToken', providerId, providerType, credentials),
+      ipcRenderer.invoke('zx-web:oauth:validateToken', providerId, providerType, credentials),
     // 代理状态
-    getProxyStatus: () => ipcRenderer.invoke('chat2api:proxy:status'),
-    restartProxy: () => ipcRenderer.invoke('chat2api:proxy:restart'),
+    getProxyStatus: () => ipcRenderer.invoke('zx-web:proxy:status'),
+    restartProxy: () => ipcRenderer.invoke('zx-web:proxy:restart'),
     // 模型同步
-    fetchModels: () => ipcRenderer.invoke('chat2api:models:fetch'),
+    fetchModels: () => ipcRenderer.invoke('zx-web:models:fetch'),
     // OAuth 进度事件
     onOAuthProgress: (callback: (event: any) => void) => {
       ipcRenderer.on('oauth:progress', (_e, event) => callback(event))

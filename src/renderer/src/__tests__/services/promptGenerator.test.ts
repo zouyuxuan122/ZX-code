@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { PromptGenerator } from '../../../../main/chat2api/proxy/services/promptGenerator'
-import type { ChatCompletionTool } from '../../../../main/chat2api/proxy/types'
+import { PromptGenerator } from '../../../../main/zx-web/proxy/services/promptGenerator'
+import type { ChatCompletionTool } from '../../../../main/zx-web/proxy/types'
 
 const mockTools: ChatCompletionTool[] = [
   {

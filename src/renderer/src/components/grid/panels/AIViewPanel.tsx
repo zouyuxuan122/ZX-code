@@ -630,45 +630,110 @@ function WorkItem({ entry }: { entry: WorkEntry }) {
   )
 }
 
-// ─── 实时流式条目 ────────────────────────────────────────
+// ─── 实时流式条目（VS Code 风格逐行渲染） ─────────────────
 function LiveStreamEntry() {
   const streamingContent = useChatStore((s) => s.streamingContent)
   const streamingThinking = useChatStore((s) => s.streamingThinking)
   const isStreaming = useChatStore((s) => s.isStreaming)
   const scrollRef = useRef<HTMLDivElement>(null)
 
+  // 实时跟随：内容每多一段就多显示一段，自动滚动到底部
   useEffect(() => {
-    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+    }
   }, [streamingContent, streamingThinking])
 
   if (!isStreaming) return null
   const isThinking = !streamingContent && !!streamingThinking
   const text = streamingContent || streamingThinking
   if (!text) return null
-  const display = text.length > 400 ? '...' + text.slice(-400) : text
+
+  // 不再截断：显示全部流式内容，逐行渲染（类 VS Code）
+  const lines = text.split('\n')
 
   return (
-    <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.2 }} className="px-2 py-0.5">
-      <div className="flex items-center gap-1.5 px-1.5 py-1 -mx-1.5">
+    <motion.div
+      initial={{ opacity: 0, y: 4 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -4 }}
+      transition={{ duration: 0.2 }}
+      className="px-2 py-0.5"
+      data-testid="live-stream-entry"
+    >
+      {/* 标题栏 */}
+      <div className="flex items-center gap-1.5 rounded-t-lg border border-border-default/20 border-b-0 bg-bg-secondary/40 px-2 py-1">
         <div className="flex h-4 w-4 flex-shrink-0 items-center justify-center">
           {isThinking ? (
-            <Brain className="h-3 w-3 animate-pulse text-chart-5" />
+            <Brain className="h-3 w-3 animate-pulse text-accent-purple" />
           ) : (
-            <MessageSquare className="h-3 w-3 animate-pulse text-brand-500" />
+            <Code2 className="h-3 w-3 animate-pulse text-accent-green" />
           )}
         </div>
-        <span className="text-[11px] font-medium text-text-primary">{isThinking ? '思考中' : '回复中'}</span>
+        <span className="text-[11px] font-medium text-text-primary">
+          {isThinking ? '思考中' : 'AI 输出中'}
+        </span>
         <span className="inline-flex items-center gap-0.5 ml-0.5">
           {[0, 1, 2].map((i) => (
-            <motion.span key={i} animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1, repeat: Infinity, delay: i * 0.15 }} className="h-0.5 w-0.5 rounded-full bg-current text-text-tertiary" />
+            <motion.span
+              key={i}
+              animate={{ opacity: [0.2, 1, 0.2] }}
+              transition={{ duration: 1, repeat: Infinity, delay: i * 0.15 }}
+              className="h-0.5 w-0.5 rounded-full bg-text-tertiary"
+            />
           ))}
         </span>
+        <span className="ml-auto text-[10px] font-mono text-text-tertiary">
+          {lines.length} 行
+        </span>
       </div>
-      <div ref={scrollRef} className="ml-5 mt-0.5 max-h-28 overflow-y-auto rounded-lg border border-border-default/20 bg-bg-primary/30 p-1.5">
-        <p className="text-[10px] leading-relaxed text-text-secondary whitespace-pre-wrap break-words">
-          {display}
-          <motion.span animate={{ opacity: [1, 0, 1] }} transition={{ duration: 0.7, repeat: Infinity }} className="inline-block w-[2px] h-2.5 ml-px bg-brand-500 align-middle" />
-        </p>
+      {/* 逐行代码区（VS Code 风格：行号 + 内容） */}
+      <div
+        ref={scrollRef}
+        className="max-h-44 overflow-y-auto rounded-b-lg border border-border-default/20 bg-bg-primary/40 font-mono text-[11px] leading-relaxed"
+      >
+        {lines.map((line, idx) => (
+          <div
+            key={idx}
+            data-testid="live-code-line"
+            className={cn(
+              'flex items-start',
+              isThinking
+                ? 'bg-accent-purple/5 border-l-2 border-accent-purple/40'
+                : 'bg-accent-green/5 border-l-2 border-accent-green/60',
+            )}
+          >
+            <span className="inline-block w-8 flex-shrink-0 select-none pr-1 text-right text-text-tertiary/40">
+              {idx + 1}
+            </span>
+            <span
+              className={cn(
+                'min-w-0 flex-1 whitespace-pre-wrap break-all pr-2',
+                isThinking ? 'text-text-secondary' : 'text-accent-green',
+              )}
+            >
+              {line || ' '}
+            </span>
+          </div>
+        ))}
+        {/* 末尾闪烁光标 */}
+        <div
+          className={cn(
+            'flex items-start',
+            isThinking
+              ? 'bg-accent-purple/5 border-l-2 border-accent-purple/40'
+              : 'bg-accent-green/5 border-l-2 border-accent-green/60',
+          )}
+        >
+          <span className="inline-block w-8 flex-shrink-0 select-none pr-1 text-right text-text-tertiary/40">
+            {lines.length + 1}
+          </span>
+          <motion.span
+            animate={{ opacity: [1, 0, 1] }}
+            transition={{ duration: 0.7, repeat: Infinity }}
+            className={cn('inline-block h-3 w-[2px]', isThinking ? 'bg-accent-purple' : 'bg-accent-green')}
+          />
+        </div>
       </div>
     </motion.div>
   )
@@ -983,17 +1048,9 @@ export function AIViewPanel() {
     [toolCalls],
   )
 
-  // 当有文件操作工具运行时，自动切换到编辑器视图
-  const hasRunningFileOp = useMemo(
-    () => runningTools.some((tc) => tc.name === 'write_file' || tc.name === 'edit'),
-    [runningTools],
-  )
-  useEffect(() => {
-    if (hasRunningFileOp) {
-      setActiveTab('editor')
-    }
-  }, [hasRunningFileOp])
-
+  // 实时跟随模式：不再自动切换到编辑器标签。
+  // 用户期望"只要不退出，就会一直跟随 AI 的动向"，
+  // 因此文件操作也应在实时跟随视图中以内联方式呈现，而非切走。
   const historicalEntries = useMemo(() => buildWorkEntries(messages), [messages])
 
   const allEntries = useMemo(() => {

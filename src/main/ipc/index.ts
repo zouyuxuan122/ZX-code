@@ -15,7 +15,7 @@ import { registerUsageIpc } from './usage.ipc'
 import { registerWeatherIpc } from './weather.ipc'
 import { registerSearchIpc } from './search.ipc'
 import { registerTerminalIpc } from './terminal.ipc'
-import { registerChat2ApiIpc } from './chat2api.ipc'
+import { registerZxWebIpc } from './zx-web.ipc'
 import { registerTtsIpc } from './tts.ipc'
 import { registerGoalIpc } from './goal.ipc'
 import { registerMemoryIpc } from './memory.ipc'
@@ -49,7 +49,7 @@ export function registerIpcHandlers(
   registerWeatherIpc()
   registerSearchIpc()
   registerTerminalIpc()
-  registerChat2ApiIpc(mainWindow)
+  registerZxWebIpc(mainWindow)
   registerTtsIpc()
   registerGoalIpc()
   registerSuperContextIpc()

@@ -533,4 +533,81 @@ describe('AIViewPanel', () => {
     expect(item).toHaveTextContent('+2')
     expect(item).toHaveTextContent('-1')
   })
+
+  // ─── 实时跟随：逐行代码渲染 ───────────────────────────────
+
+  it('实时跟随：文件操作运行时不自动切换到编辑器标签（保持在实时跟随）', () => {
+    setMockState({
+      isStreaming: true,
+      toolCalls: {
+        tc1: {
+          toolCallId: 'tc1',
+          name: 'write_file',
+          args: '{"path":"hello.html"}',
+          status: 'running',
+          startedAt: Date.now(),
+        },
+      },
+    })
+    render(<AIViewPanel />)
+    // 默认 tab 应为实时跟随，且不应因文件操作运行而切走
+    const liveTab = screen.getByText('实时跟随')
+    expect(liveTab).toBeInTheDocument()
+    // 实时跟随 tab 按钮应有 active 样式（text-text-primary）
+    expect(liveTab.className).toContain('text-text-primary')
+  })
+
+  it('实时跟随：AI 流式输出时逐行渲染代码（带行号）', () => {
+    const html = '<!DOCTYPE html>\n<html>\n<head>\n<title>Test</title>\n</head>\n<body>\n<h1>Hello</h1>\n</body>\n</html>'
+    setMockState({
+      isStreaming: true,
+      streamingContent: html,
+      streamingThinking: '',
+    })
+    render(<AIViewPanel />)
+    // 应渲染 code-line 容器
+    const lines = document.querySelectorAll('[data-testid="live-code-line"]')
+    expect(lines.length).toBeGreaterThan(0)
+    // 行数应等于内容行数
+    const expectedLines = html.split('\n').length
+    expect(lines.length).toBe(expectedLines)
+    // 每行应包含行号
+    const firstLine = lines[0] as HTMLElement
+    expect(firstLine.textContent ?? '').toContain('1')
+  })
+
+  it('实时跟随：显示全部流式内容，不截断为最后 400 字符', () => {
+    // 构造超过 400 字符的内容
+    const longLine = 'A'.repeat(100)
+    const lines: string[] = []
+    for (let i = 0; i < 6; i++) lines.push(`line-${i}-${longLine}`)
+    const full = lines.join('\n')
+    expect(full.length).toBeGreaterThan(400)
+
+    setMockState({
+      isStreaming: true,
+      streamingContent: full,
+      streamingThinking: '',
+    })
+    render(<AIViewPanel />)
+    const lineEls = document.querySelectorAll('[data-testid="live-code-line"]')
+    expect(lineEls.length).toBe(6)
+    // 第一行内容应可见（未被截断）
+    expect(lineEls[0].textContent ?? '').toContain('line-0-')
+    // 最后一行也应可见
+    expect(lineEls[5].textContent ?? '').toContain('line-5-')
+  })
+
+  it('实时跟随：无内容时显示思考中指示', () => {
+    setMockState({
+      isStreaming: true,
+      streamingContent: '',
+      streamingThinking: '正在思考解决方案...',
+    })
+    render(<AIViewPanel />)
+    // 思考内容应逐行显示
+    const lines = document.querySelectorAll('[data-testid="live-code-line"]')
+    expect(lines.length).toBeGreaterThan(0)
+    expect(lines[0].textContent ?? '').toContain('正在思考解决方案')
+  })
 })

@@ -446,7 +446,7 @@ describe('buildContext — 第二轮对话消息序列合规性', () => {
   })
 
   it('BUG复现(根因)：网页模型 tool_calls.function.name 含冒号导致第二轮 HTTP 400', () => {
-    // Chat2API 网页模型返回的 tool_calls.function.name 含 "default_api:" 前缀
+    // ZxWeb 网页模型返回的 tool_calls.function.name 含 "default_api:" 前缀
     // 冒号 ":" 不匹配 OpenAI API 要求的 ^[a-zA-Z0-9_-]+$ 模式
     // 第二轮对话发送历史消息时触发 HTTP 400 Invalid tools[N].function.name
     const messages: Message[] = [

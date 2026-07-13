@@ -280,6 +280,7 @@ export function registerChatIpc(): void {
       running.controller.abort()
       logger.info(`中止聊天: ${conversationId}`)
       cleanupPendingApprovals(conversationId)
+      cleanupPendingQuestions(conversationId)
       // 立即从 runningChats 删除，允许用户发新消息
       // 即使 for-await 循环卡住，也不会阻塞后续请求
       runningChats.delete(conversationId)
@@ -295,6 +296,7 @@ export function registerChatIpc(): void {
       running.aborted = true
       running.controller.abort()
       cleanupPendingApprovals(conversationId)
+      cleanupPendingQuestions(conversationId)
       runningChats.delete(conversationId)
       logger.info(`强制重置对话状态: ${conversationId}`)
       return true
@@ -459,6 +461,18 @@ function cleanupPendingApprovals(conversationId: string): void {
     if (key.startsWith(prefix)) {
       pendingApprovals.delete(key)
       entry.resolve(false)
+    }
+  })
+}
+
+/** 清理指定对话的所有待回答 question（reject 使 onQuestion Promise 立即结算） */
+function cleanupPendingQuestions(conversationId: string): void {
+  const prefix = `${conversationId}:`
+  pendingQuestionRejects.forEach((reject, key) => {
+    if (key.startsWith(prefix)) {
+      pendingQuestionRejects.delete(key)
+      pendingQuestions.delete(key)
+      reject('用户已中止对话')
     }
   })
 }

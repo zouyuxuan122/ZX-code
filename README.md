@@ -347,7 +347,7 @@ ZX-CODE-FREE-PLUS/
 ├── src/
 │   ├── main/                  # Electron 主进程
 │   │   ├── agent/             # Agent 引擎（工具调用循环、子智能体、记忆引擎）
-│   │   ├── chat2api/          # 内置代理引擎（OpenAI 兼容代理）
+│   │   ├── zx-web/            # 内置代理引擎（OpenAI 兼容代理）
 │   │   ├── providers/         # AI Provider 抽象层
 │   │   ├── tools/             # 14 个内置工具
 │   │   ├── database/          # SQLite 数据库与迁移
@@ -724,7 +724,7 @@ ZX-CODE-FREE-PLUS/
 ├── src/
 │   ├── main/                  # Electron main process
 │   │   ├── agent/             # Agent engine (tool loop, sub-agents, memory)
-│   │   ├── chat2api/          # Built-in proxy engine
+│   │   ├── zx-web/            # Built-in proxy engine
 │   │   ├── providers/         # AI provider abstraction
 │   │   ├── tools/             # 14 built-in tools
 │   │   ├── database/          # SQLite database & migrations

@@ -372,7 +372,7 @@ function parseMetadata(msg: Message): MessageMetadata | null {
  * 1. OpenAI 规范要求带 tool_calls 的 assistant 消息 content 必须为 null（不能是空字符串）。
  *    部分 API（DeepSeek 等）对 content="" 的 assistant 消息会返回空响应或 400 错误。
  * 2. OpenAI 兼容 API 要求 tool_calls[].function.name 和 tool 消息的 name 字段
- *    匹配 ^[a-zA-Z0-9_-]+$。Chat2API 网页模型返回的工具名含 "default_api:" 前缀，
+ *    匹配 ^[a-zA-Z0-9_-]+$。ZxWeb 网页模型返回的工具名含 "default_api:" 前缀，
  *    冒号不合法，会导致第二轮对话发送历史消息时触发 HTTP 400。
  *    此函数对 name 字段做 sanitize，移除非法字符。
  */

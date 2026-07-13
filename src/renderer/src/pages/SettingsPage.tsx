@@ -16,7 +16,7 @@ import { ThemeSettings } from '@/components/settings/ThemeSettings'
 import { LogSettings } from '@/components/settings/LogSettings'
 import { WorkspaceAppearanceSettings } from '@/components/settings/WorkspaceAppearanceSettings'
 import { McpSettings } from '@/components/settings/McpSettings'
-import { WebChatSettings } from '@/components/settings/WebChatSettings'
+import { ZxWebSettings } from '@/components/settings/ZxWebSettings'
 import { PetSettings } from '@/components/settings/PetSettings'
 import { TtsSettings } from '@/components/settings/TtsSettings'
 import { MemorySettings } from '@/components/settings/MemorySettings'
@@ -134,7 +134,7 @@ export default function SettingsPage() {
                   </div>
                 </div>
               ) : activeTab === 'webchat' ? (
-                <WebChatSettings />
+                <ZxWebSettings />
               ) : (
                 <>
                   <h2 className="mb-1 text-lg font-semibold text-text-primary">

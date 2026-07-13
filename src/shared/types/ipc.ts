@@ -524,7 +524,7 @@ export interface TraceApi {
   stats: () => Promise<TraceStats | null>
 }
 
-export interface Chat2ApiApi {
+export interface ZxWebApi {
   listAccounts(providerId?: string): Promise<any[]>
   deleteAccount(accountId: string): Promise<boolean>
   updateAccount(accountId: string, updates: any): Promise<any>
@@ -546,7 +546,7 @@ export interface IpcApi {
   settings: SettingsApi
   conversation: ConversationApi
   provider: ProviderApi
-  chat2api: Chat2ApiApi
+  zxWeb: ZxWebApi
   chat: ChatApi
   tool: ToolApi
   question: QuestionApi

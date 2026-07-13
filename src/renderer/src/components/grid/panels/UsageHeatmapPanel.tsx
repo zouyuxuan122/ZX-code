@@ -1,7 +1,6 @@
 import { useEffect, useMemo } from 'react'
 import { useUsageStatsStore } from '@/stores/usageStatsStore'
 import { Flame } from 'lucide-react'
-import { cn } from '@/utils/cn'
 
 /** 根据 token 量计算等级 0-4 */
 function calcLevel(tokens: number, max: number): number {
@@ -13,12 +12,16 @@ function calcLevel(tokens: number, max: number): number {
   return 1
 }
 
-const LEVEL_COLORS = [
-  'bg-bg-tertiary/40',
-  'bg-accent-blue/20',
-  'bg-accent-blue/40',
-  'bg-accent-blue/60',
-  'bg-accent-blue/80',
+// GitHub 风格绿色热力图：等级越高绿色越深
+// 注意：Tailwind 的 /opacity 修饰符不兼容 CSS 变量颜色（hex 值），
+// 会生成 rgb(var(--accent-green) / 0.2) → 无效 → 透明。
+// 因此使用内联 color-mix() 确保颜色可见。
+const LEVEL_BG_STYLES = [
+  { backgroundColor: 'color-mix(in srgb, var(--bg-tertiary) 40%, transparent)' },
+  { backgroundColor: 'color-mix(in srgb, var(--accent-green) 20%, transparent)' },
+  { backgroundColor: 'color-mix(in srgb, var(--accent-green) 40%, transparent)' },
+  { backgroundColor: 'color-mix(in srgb, var(--accent-green) 70%, transparent)' },
+  { backgroundColor: 'color-mix(in srgb, var(--accent-green) 90%, transparent)' },
 ]
 
 export function UsageHeatmapPanel() {
@@ -83,7 +86,8 @@ export function UsageHeatmapPanel() {
                 data-heatmap-cell
                 data-level={level || undefined}
                 title={`${day.date}: ${day.tokens.toLocaleString()} tokens / ${day.calls} 次`}
-                className={cn('h-2.5 w-2.5 rounded-sm', LEVEL_COLORS[level])}
+                className="h-2.5 w-2.5 rounded-sm"
+                style={LEVEL_BG_STYLES[level]}
               />
             )
           })}

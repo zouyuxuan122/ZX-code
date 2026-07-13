@@ -710,8 +710,8 @@ export class AgentEngine {
     workingMessages: ChatMessage[],
   ): AsyncGenerator<AgentEvent, boolean> {
     for (const call of toolCalls) {
-      // 1. 权限检查（autoAccept=true 时跳过所有审批）
-      if (context && !context.autoAccept) {
+      // 1. 权限检查（autoAccept=true 时跳过 ask 审批，但 deny 规则始终生效）
+      if (context) {
         // 从工具参数中提取目标路径（文件类工具的 path 字段）
         let targetPath: string | undefined
         try {
@@ -742,7 +742,7 @@ export class AgentEngine {
           yield { type: 'tool_call_end', tool_call_id: call.id, result: denyResult }
           continue
         }
-        if (permission === 'ask' && onToolCall) {
+        if (permission === 'ask' && !context.autoAccept && onToolCall) {
           // 需要审批
           yield {
             type: 'tool_call_approval',
@@ -803,11 +803,24 @@ export class AgentEngine {
       }
 
       // 解析参数
-      let parsedArgs: Record<string, unknown> = {}
+      let parsedArgs: Record<string, unknown>
       try {
         parsedArgs = call.args ? JSON.parse(call.args) : {}
       } catch (err) {
         logger.warn(`工具 ${call.name} 参数解析失败 [conv=${conversationId}]: ${(err as Error).message}`)
+        const parseErrorResult: ToolExecutionResult = {
+          tool_call_id: call.id,
+          content: `工具参数解析失败: ${(err as Error).message}`,
+          is_error: true,
+        }
+        workingMessages.push({
+          role: 'tool',
+          content: parseErrorResult.content,
+          tool_call_id: call.id,
+          name: call.name,
+        })
+        yield { type: 'tool_call_end', tool_call_id: call.id, result: parseErrorResult }
+        continue
       }
 
       // 构造 ToolContext

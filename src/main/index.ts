@@ -6,7 +6,7 @@ import { initLogger, logger } from './services/logger.service'
 import { createTray, destroyTray } from './services/tray.service'
 import { createDefaultProviders } from './providers'
 import { registerBuiltinTools, getCronAgentService } from './tools'
-import { initChat2Api, startChat2ApiServer, stopChat2ApiServer } from './chat2api'
+import { initZxWeb, startZxWebServer, stopZxWebServer } from './zx-web'
 import { terminalService } from './services/terminal.service'
 import { disconnectAllServers } from './services/mcp.service'
 import { handleAppAssetRequest } from './utils/appAssetHandler'
@@ -132,18 +132,18 @@ if (!gotTheLock) {
       logger.warn('主窗口未创建，跳过 IPC 处理器注册')
     }
 
-    // 启动 Chat2API 内置引擎
+    // 启动 ZxWeb 内置引擎
     try {
       const mainWindow = getMainWindow()
       if (mainWindow) {
-        await initChat2Api()
-        await startChat2ApiServer(mainWindow)
-        logger.info('Chat2API 引擎已启动')
+        await initZxWeb()
+        await startZxWebServer(mainWindow)
+        logger.info('ZxWeb 引擎已启动')
       } else {
-        logger.warn('主窗口未创建，跳过 Chat2API 引擎启动')
+        logger.warn('主窗口未创建，跳过 ZxWeb 引擎启动')
       }
     } catch (err) {
-      logger.error('Chat2API 引擎启动失败，网页大模型功能不可用', err as Error)
+      logger.error('ZxWeb 引擎启动失败，网页大模型功能不可用', err as Error)
     }
   })
 
@@ -167,7 +167,7 @@ if (!gotTheLock) {
     terminalService.disposeAll()
     await disconnectAllServers()
     destroyTray()
-    await stopChat2ApiServer()
+    await stopZxWebServer()
     closeDatabase()
   })
 }

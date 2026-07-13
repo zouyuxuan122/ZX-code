@@ -36,14 +36,14 @@ export function Toggle({ checked, onChange, disabled, size = 'md', ...rest }: To
       )}
     >
       <motion.span
-        layout
+        animate={{ x: checked ? dims.translate : 0 }}
         transition={{ type: 'spring', stiffness: 500, damping: 32 }}
         className={cn(
           'inline-block rounded-full shadow-sm',
           dims.knob,
           checked ? 'bg-white' : 'bg-text-tertiary',
         )}
-        style={{ marginLeft: 2, transform: checked ? `translateX(${dims.translate}px)` : 'translateX(0)' }}
+        style={{ marginLeft: 2 }}
       />
     </button>
   )
