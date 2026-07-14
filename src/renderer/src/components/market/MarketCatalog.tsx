@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Check, Download, Loader2, Search } from 'lucide-react'
+import { AlertTriangle, Check, Download, Loader2, Search } from 'lucide-react'
 import { ipc } from '@/services/ipc'
 import type { McpServerConfig } from '@shared/types/mcp'
+import type { MarketFetchResult, MarketListing } from '@shared/types/marketplace'
 import { Button } from '@/components/ui/Button'
 import { toast } from '@/stores/toastStore'
 import { cn } from '@/utils/cn'
@@ -231,26 +232,60 @@ function catalogToConfig(entry: CatalogEntry): Omit<McpServerConfig, 'id'> {
   return config
 }
 
-/** 单个目录卡片 */
-function CatalogCard({
-  entry,
+/** 将内置 CatalogEntry 转换为统一 MarketListing（用于回退展示） */
+function catalogToListing(entry: CatalogEntry): MarketListing {
+  return {
+    id: `builtin:${entry.id}`,
+    type: 'mcp',
+    name: entry.name,
+    description: entry.description,
+    author: entry.author,
+    version: '',
+    tags: entry.tags,
+    icon: entry.icon,
+    registryId: 'builtin',
+    install: {
+      mcp: {
+        type: entry.type,
+        command: entry.command,
+        args: entry.args,
+        url: entry.url,
+        env: entry.env,
+      },
+    },
+    raw: entry,
+  }
+}
+
+/** 来源 registry 显示名称映射 */
+const REGISTRY_LABEL: Record<string, string> = {
+  'mcp-official': 'MCP 官方',
+  smithery: 'Smithery',
+  builtin: '内置精选',
+}
+
+/** 单个市场条目卡片（统一渲染 live listing 与内置回退条目） */
+function ListingCard({
+  listing,
   installed,
   onInstall,
 }: {
-  entry: CatalogEntry
+  listing: MarketListing
   installed: boolean
-  onInstall: (entry: CatalogEntry) => Promise<void>
+  onInstall: (listing: MarketListing) => Promise<void>
 }) {
   const [installing, setInstalling] = useState(false)
 
   const handleInstall = async () => {
     setInstalling(true)
     try {
-      await onInstall(entry)
+      await onInstall(listing)
     } finally {
       setInstalling(false)
     }
   }
+
+  const registryLabel = REGISTRY_LABEL[listing.registryId] ?? listing.registryId
 
   return (
     <motion.div
@@ -267,47 +302,57 @@ function CatalogCard({
         installed && 'border-accent-green/30',
       )}
     >
-      {/* 头部：图标 + 名称 + 分类徽章 */}
+      {/* 头部：图标 + 名称 + 来源徽章 */}
       <div className="mb-2 flex items-start gap-3">
         <span className="text-2xl leading-none" aria-hidden>
-          {entry.icon}
+          {listing.icon}
         </span>
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1.5">
             <h3 className="truncate text-sm font-semibold text-text-primary">
-              {entry.name}
+              {listing.name}
             </h3>
             <span
               className={cn(
                 'rounded px-1.5 py-0.5 text-[10px] font-medium',
-                categoryBadgeColor[entry.category],
+                listing.registryId === 'builtin'
+                  ? 'bg-bg-tertiary text-text-tertiary'
+                  : 'bg-accent-blue/10 text-accent-blue',
               )}
             >
-              {categoryLabel[entry.category]}
+              {registryLabel}
             </span>
+            {listing.verified && (
+              <span className="rounded bg-accent-green/10 px-1.5 py-0.5 text-[10px] text-accent-green">
+                已认证
+              </span>
+            )}
           </div>
           <p className="mt-0.5 truncate text-xs text-text-tertiary">
-            by {entry.author}
+            {listing.author ? `by ${listing.author}` : ''}
+            {listing.version ? ` · v${listing.version}` : ''}
           </p>
         </div>
       </div>
 
       {/* 描述 */}
       <p className="mb-3 line-clamp-3 flex-1 text-xs leading-relaxed text-text-secondary">
-        {entry.description}
+        {listing.description}
       </p>
 
       {/* 标签 */}
-      <div className="mb-3 flex flex-wrap gap-1">
-        {entry.tags.map((tag) => (
-          <span
-            key={tag}
-            className="rounded bg-white/5 px-1.5 py-0.5 text-[10px] text-text-tertiary"
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
+      {listing.tags.length > 0 && (
+        <div className="mb-3 flex flex-wrap gap-1">
+          {listing.tags.map((tag) => (
+            <span
+              key={tag}
+              className="rounded bg-white/5 px-1.5 py-0.5 text-[10px] text-text-tertiary"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* 安装按钮 / 已安装徽章 */}
       <div className="flex items-center justify-end">
@@ -347,33 +392,102 @@ export function MarketCatalog({
   onInstalledChange: () => void
 }) {
   const [activeCategory, setActiveCategory] = useState<CatalogCategory | 'all'>('all')
+  const [fetchResults, setFetchResults] = useState<MarketFetchResult[]>([])
+  const [loading, setLoading] = useState(true)
+
+  /** 挂载时并发拉取所有真实社区注册表 */
+  useEffect(() => {
+    let cancelled = false
+    void (async () => {
+      setLoading(true)
+      try {
+        const results = await ipc.marketplace.fetchAll()
+        if (!cancelled) setFetchResults(results)
+      } catch (err) {
+        // 整体失败时不抛出，保留空数组（后续会回退到内置目录）
+        if (!cancelled) {
+          setFetchResults([
+            {
+              registry: {
+                id: 'unknown',
+                name: '社区市场',
+                type: 'mcp',
+                url: '',
+                adapter: 'generic-json',
+                enabled: true,
+              },
+              listings: [],
+              error: (err as Error).message,
+            },
+          ])
+        }
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   /** 已安装服务器的名称集合（用于匹配） */
   const installedNames = useMemo(() => {
     return new Set(installedServers.map((s) => s.name))
   }, [installedServers])
 
-  /** 过滤后的条目列表 */
-  const filteredEntries = useMemo(() => {
+  /** 来自真实 registry 的 listing（合并所有成功的 registry） */
+  const liveListings = useMemo(() => {
+    return fetchResults.flatMap((r) => r.listings)
+  }, [fetchResults])
+
+  /** 是否有任意一个 registry 成功返回 listing（用于决定是否回退到内置目录） */
+  const hasAnyLiveListing = liveListings.length > 0
+
+  /** 失败的 registry 列表（用于显示错误提示） */
+  const failedRegistries = useMemo(() => {
+    return fetchResults.filter((r) => r.error)
+  }, [fetchResults])
+
+  /** 当无任何 live listing 时，回退到内置精选目录 */
+  const fallbackListings = useMemo<MarketListing[]>(() => {
+    if (hasAnyLiveListing) return []
+    return CATALOG.map(catalogToListing)
+  }, [hasAnyLiveListing])
+
+  /** 当前展示的统一 listing 列表（live 优先，回退次之） */
+  const displayListings = useMemo(() => {
+    return hasAnyLiveListing ? liveListings : fallbackListings
+  }, [hasAnyLiveListing, liveListings, fallbackListings])
+
+  /** 按搜索词与分类过滤 */
+  const filteredListings = useMemo(() => {
     const q = searchQuery.trim().toLowerCase()
-    return CATALOG.filter((entry) => {
-      if (activeCategory !== 'all' && entry.category !== activeCategory) {
-        return false
-      }
+    return displayListings.filter((l) => {
       if (!q) return true
       return (
-        entry.name.toLowerCase().includes(q) ||
-        entry.description.toLowerCase().includes(q) ||
-        entry.tags.some((t) => t.toLowerCase().includes(q))
+        l.name.toLowerCase().includes(q) ||
+        l.description.toLowerCase().includes(q) ||
+        l.tags.some((t) => t.toLowerCase().includes(q))
       )
     })
-  }, [searchQuery, activeCategory])
+  }, [displayListings, searchQuery])
 
-  /** 安装一个目录条目 */
-  const handleInstall = async (entry: CatalogEntry) => {
+  /** 安装一个市场条目：live → marketplace.install；内置 → mcp.addServer */
+  const handleInstall = async (listing: MarketListing) => {
     try {
-      await ipc.mcp.addServer(catalogToConfig(entry))
-      toast.success('安装成功', `「${entry.name}」已添加到已安装列表`)
+      if (listing.registryId === 'builtin') {
+        // 内置回退：直接走旧 MCP 添加路径
+        const entry = listing.raw as CatalogEntry
+        await ipc.mcp.addServer(catalogToConfig(entry))
+      } else {
+        // 来自真实 registry：走 marketplace.install 统一管线
+        const result = await ipc.marketplace.install(listing)
+        if (!result.ok) {
+          toast.error('安装失败', result.message)
+          return
+        }
+      }
+      toast.success('安装成功', `「${listing.name}」已添加到已安装列表`)
       onInstalledChange()
     } catch (err) {
       toast.error('安装失败', (err as Error).message)
@@ -382,29 +496,53 @@ export function MarketCatalog({
 
   return (
     <div className="flex flex-col gap-3">
-      {/* 分类筛选 */}
-      <div className="flex flex-wrap items-center gap-1.5">
-        {CATEGORIES.map((cat) => {
-          const isActive = activeCategory === cat.id
-          return (
-            <button
-              key={cat.id}
-              onClick={() => setActiveCategory(cat.id)}
-              className={cn(
-                'rounded-md border px-3 py-1 text-xs transition-smooth-fast',
-                isActive
-                  ? 'border-border-strong bg-white/10 text-text-primary'
-                  : 'border-transparent text-text-secondary hover:bg-white/5 hover:text-text-primary',
-              )}
-            >
-              {cat.label}
-            </button>
-          )
-        })}
-      </div>
+      {/* 分类筛选（仅在回退到内置目录时展示） */}
+      {!hasAnyLiveListing && (
+        <div className="flex flex-wrap items-center gap-1.5">
+          {CATEGORIES.map((cat) => {
+            const isActive = activeCategory === cat.id
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={cn(
+                  'rounded-md border px-3 py-1 text-xs transition-smooth-fast',
+                  isActive
+                    ? 'border-border-strong bg-white/10 text-text-primary'
+                    : 'border-transparent text-text-secondary hover:bg-white/5 hover:text-text-primary',
+                )}
+              >
+                {cat.label}
+              </button>
+            )
+          })}
+        </div>
+      )}
 
-      {/* 卡片网格 */}
-      {filteredEntries.length === 0 ? (
+      {/* 失败 registry 的错误提示 */}
+      {failedRegistries.length > 0 && (
+        <div className="flex flex-col gap-1">
+          {failedRegistries.map((r) => (
+            <div
+              key={r.registry.id}
+              className="flex items-center gap-2 rounded-md border border-accent-orange/20 bg-accent-orange/5 px-3 py-1.5 text-[11px] text-accent-orange"
+            >
+              <AlertTriangle className="h-3 w-3 shrink-0" />
+              <span>
+                {r.registry.name} 拉取失败：{r.error}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* 加载中 */}
+      {loading ? (
+        <div className="surface-3d rounded-md px-4 py-10 text-center text-sm text-text-tertiary">
+          <Loader2 className="mx-auto mb-2 h-5 w-5 animate-spin opacity-60" />
+          正在拉取社区市场...
+        </div>
+      ) : filteredListings.length === 0 ? (
         <div className="surface-3d rounded-md px-4 py-10 text-center text-sm text-text-tertiary">
           <Search className="mx-auto mb-2 h-6 w-6 opacity-40" />
           未找到匹配的扩展
@@ -425,11 +563,11 @@ export function MarketCatalog({
           }}
           className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
         >
-          {filteredEntries.map((entry) => (
-            <CatalogCard
-              key={entry.id}
-              entry={entry}
-              installed={installedNames.has(entry.name)}
+          {filteredListings.map((listing) => (
+            <ListingCard
+              key={listing.id}
+              listing={listing}
+              installed={installedNames.has(listing.name)}
               onInstall={handleInstall}
             />
           ))}

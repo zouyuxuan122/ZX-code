@@ -87,8 +87,15 @@ function InstalledRow({
     setLocalError(null)
     setBusy(true)
     try {
-      await ipc.mcp.connectServer(config.id)
-      toast.success('已连接', `「${config.name}」连接成功`)
+      const result = await ipc.mcp.connectServer(config.id)
+      // connectMcpServer 永不抛错，返回 { connected, error } — 必须检查 connected 字段
+      if (result.connected) {
+        toast.success('已连接', `「${config.name}」连接成功`)
+      } else {
+        const errMsg = result.error || '未知错误'
+        setLocalError(errMsg)
+        toast.error('连接失败', `「${config.name}」连接失败：${errMsg}`)
+      }
       onRefresh()
     } catch (err) {
       setLocalError((err as Error).message)

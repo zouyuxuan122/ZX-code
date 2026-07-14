@@ -6,6 +6,8 @@ out/
 dist/
 release/
 release-v2/
+release-0.3/
+.cache/
 
 # IDE
 .vscode/

@@ -25,6 +25,7 @@ import { registerEvolutionIpc } from './evolution.ipc'
 import { registerProfileIpc } from './profile.ipc'
 import { registerCronIpc } from './cron.ipc'
 import { registerTraceIpc } from './trace.ipc'
+import { registerMarketplaceIpc } from './marketplace.ipc'
 import type { SchedulerService } from '../services/scheduler.service'
 import { getMainWindow } from '../window'
 import { APP_VERSION } from '@shared/constants/app'
@@ -59,6 +60,7 @@ export function registerIpcHandlers(
   registerProfileIpc()
   registerCronIpc(undefined, undefined)
   registerTraceIpc()
+  registerMarketplaceIpc()
 
   ipcMain.handle('window:minimize', () => {
     getMainWindow()?.minimize()

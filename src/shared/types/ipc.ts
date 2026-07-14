@@ -6,6 +6,13 @@ import type { ToolExecutionResult, ToolDefinition } from './tool'
 import type { ContextUsage, MessageTokenInfo } from './context'
 import type { McpApi } from './mcp'
 import type { SclApi } from './scl'
+import type {
+  MarketRegistry,
+  MarketListing,
+  MarketSearchFilters,
+  MarketFetchResult,
+  MarketInstallResult,
+} from './marketplace'
 import type { UsageStatsApi } from './usage'
 import type { WeatherApi } from './weather'
 import type { FileSearchResult, SearchOptions, MessageSearchResult, ConversationSearchResult } from './search'
@@ -541,6 +548,20 @@ export interface ZxWebApi {
   onOAuthProgress(callback: (event: any) => void): void
 }
 
+/** 社区市场 API（聚合 MCP / Skill / Plugin 真实社区注册表） */
+export interface MarketplaceApi {
+  /** 列出所有内置注册表（官方 MCP registry、Smithery、技能 / 插件目录等） */
+  listRegistries: () => Promise<MarketRegistry[]>
+  /** 并发拉取所有注册表（单个失败不影响其它） */
+  fetchAll: () => Promise<MarketFetchResult[]>
+  /** 拉取单个注册表 */
+  fetchOne: (registry: MarketRegistry) => Promise<MarketListing[]>
+  /** 在已拉取条目上做本地过滤 */
+  search: (listings: MarketListing[], filters: MarketSearchFilters) => Promise<MarketListing[]>
+  /** 安装一个市场条目（路由到 mcp / scl 安装管线） */
+  install: (listing: MarketListing) => Promise<MarketInstallResult>
+}
+
 export interface IpcApi {
   project: ProjectApi
   settings: SettingsApi
@@ -562,6 +583,8 @@ export interface IpcApi {
   weather: WeatherApi
   search: SearchApi
   terminal: TerminalApi
+  /** 社区市场（聚合 MCP / Skill / Plugin 注册表） */
+  marketplace: MarketplaceApi
   /** TTS（文本转语音） */
   tts: TtsApi
   /** 目标与看板任务 */

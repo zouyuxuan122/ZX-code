@@ -254,6 +254,13 @@ export const api: IpcApi = {
     fetchRemoteCatalog: (url) => ipcRenderer.invoke('scl:fetchRemoteCatalog', url),
     installFromRemote: (url, entries) => ipcRenderer.invoke('scl:installFromRemote', url, entries),
   },
+  marketplace: {
+    listRegistries: () => ipcRenderer.invoke('marketplace:listRegistries'),
+    fetchAll: () => ipcRenderer.invoke('marketplace:fetchAll'),
+    fetchOne: (registry) => ipcRenderer.invoke('marketplace:fetchOne', registry),
+    search: (listings, filters) => ipcRenderer.invoke('marketplace:search', listings, filters),
+    install: (listing) => ipcRenderer.invoke('marketplace:install', listing),
+  },
   usage: {
     record: (record) => ipcRenderer.invoke('usage:record', record),
     getDailyStats: (days) => ipcRenderer.invoke('usage:getDailyStats', days),
